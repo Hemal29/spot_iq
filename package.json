@@ -1,0 +1,17 @@
+{
+  "name": "spotiq",
+  "version": "1.0.0",
+  "description": "Smart Online Parking Reservation System",
+  "scripts": {
+    "install:all": "npm install --prefix backend && npm install --prefix customer && npm install --prefix admin",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:customer": "npm start --prefix customer",
+    "dev:admin": "PORT=3001 npm start --prefix admin",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:customer\" \"npm run dev:admin\"",
+    "build:customer": "npm run build --prefix customer",
+    "build:admin": "npm run build --prefix admin",
+    "start:backend": "npm start --prefix backend"
+  },
+  "keywords": ["parking", "reservation", "spotiq"],
+  "license": "MIT"
+}
