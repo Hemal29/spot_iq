@@ -39,7 +39,7 @@ const features = [
   },
   {
     icon: FaMapMarkerAlt,
-    title: '200+ Ahmedabad Locations',
+    title: 'Ahmedabad Locations',
     description: 'From Kankaria Lake to Science City — parking available at every corner of the city.',
     gradient: 'from-[#121214] to-[#3d2f14]',
     shadow: 'shadow-primary-400/20',

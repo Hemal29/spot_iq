@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   FaLinkedinIn, FaGithub, FaTwitter, FaInstagram, FaFacebookF,
   FaApple, FaGooglePlay, FaEnvelope, FaPhoneAlt, FaMapMarkerAlt,
@@ -49,14 +49,7 @@ const trustItems = [
   'Secure Payments',
   'AI Recommendations',
   'Real-time Availability',
-  'Trusted by 10,000+ Drivers',
-];
-
-const stats = [
-  { end: 50, suffix: 'K+', label: 'Bookings' },
-  { end: 10, suffix: 'K+', label: 'Users' },
-  { end: 500, suffix: '+', label: 'Parking Locations' },
-  { end: 99.9, suffix: '%', label: 'Uptime', isDecimal: true },
+  'QR Code Entry',
 ];
 
 const socialLinks = [
@@ -74,36 +67,6 @@ const bottomLinks = [
   { label: 'Sitemap', to: '/' },
   { label: 'Accessibility', to: '/' },
 ];
-
-function AnimatedCounter({ end, suffix = '', isDecimal = false }) {
-  const [count, setCount] = useState(0);
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: '-50px' });
-
-  useEffect(() => {
-    if (!inView) return;
-    const duration = 2000;
-    const steps = 60;
-    const increment = end / steps;
-    let current = 0;
-    const timer = setInterval(() => {
-      current += increment;
-      if (current >= end) {
-        setCount(end);
-        clearInterval(timer);
-      } else {
-        setCount(isDecimal ? Math.round(current * 10) / 10 : Math.floor(current));
-      }
-    }, duration / steps);
-    return () => clearInterval(timer);
-  }, [inView, end, isDecimal]);
-
-  return (
-    <span ref={ref} className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-[#e7c588] via-[#f3e0ae] to-[#bf8a2e] bg-clip-text text-transparent">
-      {isDecimal ? count.toFixed(1) : count}{suffix}
-    </span>
-  );
-}
 
 function LinkColumn({ title, links, delay }) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -414,21 +377,6 @@ export default function Footer() {
                 <FaCheck className="text-[#e7c588] text-[10px] flex-shrink-0" />
                 <span className="text-[12px] text-[#f9f0d7]/80 font-medium transition-colors duration-300">{item}</span>
               </motion.div>
-            ))}
-          </motion.div>
-
-          {/* Statistics */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16 py-10 rounded-2xl bg-[#121214] border border-[#e7c588]/25 transition-colors duration-300"
-          >
-            {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
-                <AnimatedCounter end={stat.end} suffix={stat.suffix} isDecimal={stat.isDecimal} />
-                <p className="text-xs text-[#f9f0d7]/60 mt-1.5 uppercase tracking-wider font-medium transition-colors duration-300">{stat.label}</p>
-              </div>
             ))}
           </motion.div>
 

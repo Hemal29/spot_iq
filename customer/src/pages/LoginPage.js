@@ -36,17 +36,6 @@ export default function LoginPage() {
             Find and reserve the perfect parking spot in seconds. Your spot awaits.
           </p>
 
-          <div className="grid grid-cols-2 gap-4 mb-10 animate-slideUp" style={{ animationDelay: '0.2s' }}>
-            <div className="bg-[#0a0a0b]/10   border border-[#e7c588]/25 rounded-xl p-5">
-              <div className="text-3xl font-bold text-[#f9f0d7]">50K+</div>
-              <div className="text-[#f3e0ae]  text-sm mt-1">Parking Spots</div>
-            </div>
-            <div className="bg-[#0a0a0b]/10   border border-[#e7c588]/25 rounded-xl p-5">
-              <div className="text-3xl font-bold text-[#f9f0d7]">10K+</div>
-              <div className="text-[#f3e0ae]  text-sm mt-1">Happy Users</div>
-            </div>
-          </div>
-
           <div className="perspective-1000 animate-float-slow" style={{ animationDuration: '8s' }}>
             <div className="flex gap-3" style={{ transform: 'rotateX(55deg) rotateZ(-35deg) translateZ(0)' }}>
               {[...Array(5)].map((_, i) => (

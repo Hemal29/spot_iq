@@ -7,7 +7,7 @@ import React from 'react';
  */
 export default function PageHero({ badge, title, highlight, subtitle, children, compact = true }) {
   return (
-    <div className={`relative -mt-20 overflow-hidden bg-black ${compact ? 'pt-28 pb-8' : 'pt-32 pb-12'}`}>
+    <div className={`relative -mt-20 overflow-hidden bg-black flex items-center ${compact ? 'min-h-[340px] sm:min-h-[380px] pt-28 pb-12' : 'min-h-[480px] pt-32 pb-16'}`}>
       {/* Parking video background */}
       <video
         className="absolute inset-0 w-full h-full object-cover"
@@ -22,7 +22,7 @@ export default function PageHero({ badge, title, highlight, subtitle, children, 
       <div className="absolute inset-0 bg-gradient-to-b from-black/85 via-black/60 to-[#0a0a0b]" />
       <div className="absolute inset-0 bg-[#e7c588]/[0.06] mix-blend-overlay" />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {badge && (
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-black/50 backdrop-blur-md border border-[#e7c588]/30 rounded-full text-sm font-medium text-[#f3e0ae] mb-4">
             {badge}

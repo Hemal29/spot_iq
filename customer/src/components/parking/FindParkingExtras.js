@@ -323,7 +323,7 @@ const ReviewCarousel = () => {
 const SmartStats = () => {
   const stats = [
     { value: '200+', label: 'Parking Lots', icon: FaCar },
-    { value: '15K+', label: 'Happy Drivers', icon: '😊' },
+    { value: '4.8', label: 'Driver Rating', icon: '😊' },
     { value: '₹2 Cr+', label: 'Driver Savings', icon: '💰' },
     { value: '4.8', label: 'App Rating', icon: FaStar },
     { value: '98%', label: 'Satisfaction', icon: '👍' },

@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { FaSearch, FaParking, FaMapMarkerAlt, FaStar, FaShieldAlt } from 'react-icons/fa';
 
 const stats = [
-  { value: '25,000+', label: 'Happy Customers', icon: FaStar },
+  { value: '4.8', label: 'Driver Rating', icon: FaStar },
   { value: '200+', label: 'Locations in Ahmedabad', icon: FaMapMarkerAlt },
-  { value: '99.9%', label: 'Uptime', icon: FaShieldAlt },
+  { value: '24/7', label: 'Support', icon: FaShieldAlt },
 ];
 
 const floatingElements = [
@@ -71,7 +71,7 @@ const HeroSection = () => {
           </h1>
 
           <p className="text-lg sm:text-xl text-[#f9f0d7]/70 max-w-2xl mx-auto mb-10 animate-slideUp animation-delay-100">
-            Find, book, and pay for parking in seconds across 200+ locations in Ahmedabad.
+            Find, book, and pay for parking in seconds across Ahmedabad.
             From Kankaria Lake to AlphaOne Mall — never circle the block again.
           </p>
 
