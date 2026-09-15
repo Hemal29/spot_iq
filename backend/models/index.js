@@ -9,6 +9,7 @@ const defineNotification = require('./Notification');
 const defineCoupon = require('./Coupon');
 const defineSupportTicket = require('./SupportTicket');
 const defineParkingOwner = require('./ParkingOwner');
+const defineSetting = require('./Setting');
 
 const initModels = (sequelize) => {
   const User = defineUser(sequelize);
@@ -22,6 +23,7 @@ const initModels = (sequelize) => {
   const Coupon = defineCoupon(sequelize);
   const SupportTicket = defineSupportTicket(sequelize);
   const ParkingOwner = defineParkingOwner(sequelize);
+  const Setting = defineSetting(sequelize);
 
   // Associations
   User.hasMany(Vehicle, { foreignKey: 'userId' });
@@ -43,6 +45,7 @@ const initModels = (sequelize) => {
   Booking.belongsTo(Slot, { foreignKey: 'slotId' });
   Booking.belongsTo(Vehicle, { foreignKey: 'vehicleId' });
   Booking.belongsTo(Coupon, { foreignKey: 'couponId' });
+  Booking.hasOne(Payment, { foreignKey: 'bookingId' });
 
   Vehicle.belongsTo(User, { foreignKey: 'userId' });
 
@@ -73,6 +76,7 @@ const initModels = (sequelize) => {
   module.exports.Coupon = Coupon;
   module.exports.SupportTicket = SupportTicket;
   module.exports.ParkingOwner = ParkingOwner;
+  module.exports.Setting = Setting;
 };
 
 module.exports = initModels;

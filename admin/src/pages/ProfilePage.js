@@ -1,53 +1,38 @@
 import { useState, useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import PageHeader from '../components/common/PageHeader';
-import FormField from '../components/common/FormField';
-import Button from '../components/common/Button';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import adminService from '../services/adminService';
-import { FaCamera, FaUser, FaLock, FaEye, FaEyeSlash, FaCheck, FaTimes } from 'react-icons/fa';
+import { toast } from 'react-toastify';
+import { FaCamera, FaUser, FaLock, FaEye, FaEyeSlash, FaCheck, FaSave } from 'react-icons/fa';
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
-
   const [form, setForm] = useState({ name: '', email: '', phone: '' });
-  const [passwordForm, setPasswordForm] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
-  });
+  const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [showPassword, setShowPassword] = useState({ current: false, new: false, confirm: false });
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null);
-  const [toast, setToast] = useState(null);
   const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
+  useEffect(() => { fetchProfile(); }, []);
 
   const fetchProfile = async () => {
     try {
       const res = await adminService.getProfile();
-      const data = res.data?.admin || res.data?.user || res.data;
+      const data = res.data?.data || res.data?.admin || res.data || {};
       setProfile(data);
       setForm({ name: data.name || '', email: data.email || '', phone: data.phone || '' });
       setAvatarPreview(data.avatar || null);
     } catch (err) {
-      showToast('Failed to load profile', 'error');
+      toast.error('Failed to load profile');
     } finally {
       setLoading(false);
     }
   };
-
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 3000);
-  };
-
-  const handleAvatarClick = () => fileInputRef.current?.click();
 
   const handleAvatarChange = (e) => {
     const file = e.target.files?.[0];
@@ -61,7 +46,6 @@ export default function ProfilePage() {
   const handleSaveProfile = async () => {
     setSaving(true);
     try {
-      const payload = { name: form.name, phone: form.phone };
       if (avatarFile) {
         const formData = new FormData();
         formData.append('avatar', avatarFile);
@@ -69,11 +53,11 @@ export default function ProfilePage() {
         formData.append('phone', form.phone);
         await adminService.updateProfile(formData);
       } else {
-        await adminService.updateProfile(payload);
+        await adminService.updateProfile({ name: form.name, phone: form.phone });
       }
-      showToast('Profile updated successfully');
+      toast.success('Profile updated successfully');
     } catch (err) {
-      showToast(err.response?.data?.message || 'Failed to update profile', 'error');
+      toast.error(err.response?.data?.message || 'Failed to update profile');
     } finally {
       setSaving(false);
     }
@@ -81,11 +65,11 @@ export default function ProfilePage() {
 
   const handleChangePassword = async () => {
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      showToast('Passwords do not match', 'error');
+      toast.error('Passwords do not match');
       return;
     }
     if (passwordForm.newPassword.length < 6) {
-      showToast('Password must be at least 6 characters', 'error');
+      toast.error('Password must be at least 6 characters');
       return;
     }
     setChangingPassword(true);
@@ -94,10 +78,10 @@ export default function ProfilePage() {
         currentPassword: passwordForm.currentPassword,
         newPassword: passwordForm.newPassword,
       });
-      showToast('Password changed successfully');
+      toast.success('Password changed successfully');
       setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (err) {
-      showToast(err.response?.data?.message || 'Failed to change password', 'error');
+      toast.error(err.response?.data?.message || 'Failed to change password');
     } finally {
       setChangingPassword(false);
     }
@@ -106,28 +90,17 @@ export default function ProfilePage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6 relative">
-      <PageHeader title="My Profile" subtitle="Manage your account settings" />
+    <div className="max-w-3xl mx-auto space-y-6">
+      <PageHeader title="My Profile" subtitle="Manage your account settings" breadcrumbs={[{ label: 'Dashboard', to: '/' }, { label: 'Profile' }]} />
 
-      {toast && (
-        <div
-          className={`fixed top-6 right-6 z-50 flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg animate-slideUp ${
-            toast.type === 'error' ? 'bg-red-600 text-white' : 'bg-green-600 text-white'
-          }`}
-        >
-          {toast.type === 'error' ? <FaTimes /> : <FaCheck />}
-          <span className="text-sm font-medium">{toast.message}</span>
-        </div>
-      )}
-
-      <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 p-8">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-8">
         <div className="flex flex-col items-center mb-8">
-          <div className="relative group cursor-pointer" onClick={handleAvatarClick}>
-            <div className="w-28 h-28 rounded-full overflow-hidden ring-4 ring-blue-100 shadow-md">
+          <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+            <div className="w-28 h-28 rounded-full overflow-hidden ring-4 ring-gray-100/20 shadow-md">
               {avatarPreview ? (
                 <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                <div className="w-full h-full bg-gradient-to-br from-primary-400 to-purple-600 flex items-center justify-center">
                   <FaUser className="text-4xl text-white" />
                 </div>
               )}
@@ -137,84 +110,63 @@ export default function ProfilePage() {
             </div>
           </div>
           <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
-          <h2 className="text-xl font-bold text-gray-900 mt-4">{profile?.name || 'Admin'}</h2>
-          <p className="text-sm text-gray-500">{profile?.email}</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100  mt-4">{profile?.name || 'Admin'}</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 ">{profile?.email}</p>
+          <span className="mt-2 px-3 py-1 text-xs font-medium bg-gray-100/10 text-gray-700 dark:text-gray-300  rounded-full">Administrator</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FormField label="Full Name" name="name">
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
-            />
-          </FormField>
-
-          <FormField label="Email Address" name="email">
-            <input
-              type="email"
-              value={form.email}
-              readOnly
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-gray-50 text-gray-500 text-sm cursor-not-allowed"
-            />
-          </FormField>
-
-          <FormField label="Phone Number" name="phone">
-            <input
-              type="tel"
-              value={form.phone}
-              onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
-            />
-          </FormField>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300  mb-1.5">Full Name</label>
+            <input type="text" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} className="input-field" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300  mb-1.5">Email Address</label>
+            <input type="email" value={form.email} readOnly className="input-field opacity-60 cursor-not-allowed" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300  mb-1.5">Phone Number</label>
+            <input type="tel" value={form.phone} onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))} className="input-field" />
+          </div>
         </div>
 
         <div className="mt-6 flex justify-end">
-          <Button onClick={handleSaveProfile} loading={saving}>
+          <button onClick={handleSaveProfile} disabled={saving} className="btn-primary">
+            {saving ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <FaSave />}
             Save Profile
-          </Button>
+          </button>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 p-8">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card p-8">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br bg-primary-500 flex items-center justify-center">
             <FaLock className="text-lg text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">Change Password</h3>
-            <p className="text-sm text-gray-500">Update your account password</p>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 ">Change Password</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 ">Update your account password</p>
           </div>
         </div>
 
         <div className="space-y-5">
           {[
-            { key: 'current', label: 'Current Password', placeholder: 'Enter current password' },
-            { key: 'new', label: 'New Password', placeholder: 'Enter new password' },
-            { key: 'confirm', label: 'Confirm New Password', placeholder: 'Re-enter new password' },
-          ].map((field) => (
-            <div key={field.key}>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">{field.label}</label>
+            { key: 'current', label: 'Current Password', field: 'currentPassword' },
+            { key: 'new', label: 'New Password', field: 'newPassword' },
+            { key: 'confirm', label: 'Confirm New Password', field: 'confirmPassword' },
+          ].map(({ key, label, field }) => (
+            <div key={key}>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300  mb-1.5">{label}</label>
               <div className="relative">
                 <input
-                  type={showPassword[field.key] ? 'text' : 'password'}
-                  placeholder={field.placeholder}
-                  value={passwordForm[field.key === 'current' ? 'currentPassword' : field.key === 'new' ? 'newPassword' : 'confirmPassword']}
-                  onChange={(e) =>
-                    setPasswordForm((p) => ({
-                      ...p,
-                      [field.key === 'current' ? 'currentPassword' : field.key === 'new' ? 'newPassword' : 'confirmPassword']: e.target.value,
-                    }))
-                  }
-                  className="w-full px-4 py-2.5 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none text-sm"
+                  type={showPassword[key] ? 'text' : 'password'}
+                  placeholder={`Enter ${label.toLowerCase()}`}
+                  value={passwordForm[field]}
+                  onChange={(e) => setPasswordForm((p) => ({ ...p, [field]: e.target.value }))}
+                  className="input-field pr-12"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((p) => ({ ...p, [field.key]: !p[field.key] }))}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword[field.key] ? <FaEyeSlash /> : <FaEye />}
+                <button type="button" onClick={() => setShowPassword((p) => ({ ...p, [key]: !p[key] }))} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:text-gray-400 dark:text-gray-500 ">
+                  {showPassword[key] ? <FaEyeSlash /> : <FaEye />}
                 </button>
               </div>
             </div>
@@ -222,15 +174,16 @@ export default function ProfilePage() {
         </div>
 
         <div className="mt-6 flex justify-end">
-          <Button
+          <button
             onClick={handleChangePassword}
-            loading={changingPassword}
-            disabled={!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword}
+            disabled={changingPassword || !passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword}
+            className="btn-primary"
           >
+            {changingPassword ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <FaLock />}
             Change Password
-          </Button>
+          </button>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import PaymentCard from '../components/payment/PaymentCard';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
 import bookingService from '../services/bookingService';
+import PageHero from '../components/common/PageHero';
 
 export default function PaymentPage() {
   const { bookingId } = useParams();
@@ -24,36 +25,33 @@ export default function PaymentPage() {
   if (!booking) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#0a0a0b]">
+      <PageHero title="Complete" highlight="Payment" subtitle="Secure your parking spot" />
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Complete Payment</h1>
-          <p className="text-gray-500 mt-1">Secure your parking spot</p>
-        </div>
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="p-6 border-b border-gray-200">
-            <h2 className="font-semibold text-gray-900">Booking Summary</h2>
+        <div className="bg-[#0a0a0b] dark:bg-[#0a0a0b] rounded-xl shadow-sm border border-[#e7c588]/25 dark:border-[#e7c588]/25 overflow-hidden">
+          <div className="p-6 border-b border-[#e7c588]/25">
+            <h2 className="font-semibold text-[#f9f0d7]">Booking Summary</h2>
             {booking.parking && (
-              <div className="mt-3 space-y-2 text-sm text-gray-600">
+              <div className="mt-3 space-y-2 text-sm text-[#e7c588]/80">
                 <div className="flex justify-between">
                   <span>Parking</span>
-                  <span className="font-medium text-gray-900">{booking.parking.name || 'N/A'}</span>
+                  <span className="font-medium text-[#f9f0d7]">{booking.parking.name || 'N/A'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Start</span>
-                  <span className="font-medium text-gray-900">
+                  <span className="font-medium text-[#f9f0d7]">
                     {booking.startTime ? new Date(booking.startTime).toLocaleString() : 'N/A'}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>End</span>
-                  <span className="font-medium text-gray-900">
+                  <span className="font-medium text-[#f9f0d7]">
                     {booking.endTime ? new Date(booking.endTime).toLocaleString() : 'N/A'}
                   </span>
                 </div>
-                <div className="flex justify-between border-t border-gray-200 pt-2">
-                  <span className="font-semibold text-gray-900">Total</span>
-                  <span className="font-semibold text-gray-900">${booking.totalAmount?.toFixed(2) || '0.00'}</span>
+                <div className="flex justify-between border-t border-[#e7c588]/25 dark:border-[#e7c588]/25 pt-2">
+                  <span className="font-semibold text-[#f9f0d7]">Total</span>
+                  <span className="font-semibold text-[#f9f0d7]">${booking.totalAmount?.toFixed(2) || '0.00'}</span>
                 </div>
               </div>
             )}

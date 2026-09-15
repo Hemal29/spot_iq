@@ -82,24 +82,24 @@ const ChatBot = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-2rem)] bg-[#1E293B] border border-white/10 rounded-2xl shadow-2xl shadow-orange-500/10 flex flex-col overflow-hidden animate-slideUp">
+    <div className="fixed bottom-24 right-6 z-50 w-[380px] max-w-[calc(100vw-2rem)] bg-[#121214] border border-[#e7c588]/25 rounded-2xl shadow-2xl shadow-primary-400/10 flex flex-col overflow-hidden animate-slideUp">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-orange-500/10 to-transparent border-b border-white/10">
+      <div className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-primary-400/10 to-transparent border-b border-[#e7c588]/25">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-purple-600 flex items-center justify-center shadow-lg shadow-orange-500/20">
-            <FaRobot className="text-white text-lg" />
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-400 to-[#e7c588] flex items-center justify-center shadow-lg shadow-primary-400/20">
+            <FaRobot className="text-[#f9f0d7] text-lg" />
           </div>
           <div>
-            <h3 className="text-white font-semibold text-sm">SpotIQ AI</h3>
-            <p className="text-[10px] text-green-400 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+            <h3 className="text-[#f9f0d7] font-semibold text-sm">SpotIQ AI</h3>
+            <p className="text-[10px] text-primary-400 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 bg-primary-500 rounded-full animate-pulse" />
               Online
             </p>
           </div>
         </div>
         <button
           onClick={onClose}
-          className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-400 hover:text-white transition-all"
+          className="w-8 h-8 rounded-lg bg-[#0a0a0b]/5 hover:bg-[#0a0a0b]/10 flex items-center justify-center text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:text-[#f9f0d7] transition-all"
         >
           <FaTimes />
         </button>
@@ -112,8 +112,8 @@ const ChatBot = ({ isOpen, onClose }) => {
             <div
               className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                 msg.role === 'user'
-                  ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-tr-sm'
-                  : 'bg-white/5 text-gray-200 border border-white/5 rounded-tl-sm'
+                  ? 'bg-primary-500 text-[#f9f0d7] rounded-tr-sm'
+                  : 'bg-[#0a0a0b]/5 text-[#f3e0ae] border border-[#e7c588]/25 rounded-tl-sm'
               }`}
             >
               {msg.role === 'bot' ? (
@@ -127,8 +127,8 @@ const ChatBot = ({ isOpen, onClose }) => {
 
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-white/5 border border-white/5 rounded-2xl rounded-tl-sm px-4 py-3">
-              <div className="flex items-center gap-2 text-gray-400 text-sm">
+            <div className="bg-[#0a0a0b]/5 border border-[#e7c588]/25 rounded-2xl rounded-tl-sm px-4 py-3">
+              <div className="flex items-center gap-2 text-[#e7c588]/80 dark:text-[#e7c588]/80 text-sm">
                 <FaSpinner className="animate-spin" />
                 Typing...
               </div>
@@ -146,7 +146,7 @@ const ChatBot = ({ isOpen, onClose }) => {
               key={i}
               onClick={() => handleSend(action)}
               disabled={loading}
-              className="text-[11px] px-2.5 py-1.5 bg-white/5 hover:bg-orange-500/20 border border-white/10 hover:border-orange-500/30 text-gray-300 hover:text-orange-400 rounded-lg transition-all disabled:opacity-50"
+              className="text-[11px] px-2.5 py-1.5 bg-[#0a0a0b]/5 hover:bg-[#0a0a0b]0/20 border border-[#e7c588]/25 hover:border-primary-400/30 text-[#e7c588]/80 hover:text-[#e7c588]/80 dark:text-[#e7c588]/80 rounded-lg transition-all disabled:opacity-50"
             >
               {action}
             </button>
@@ -155,8 +155,8 @@ const ChatBot = ({ isOpen, onClose }) => {
       </div>
 
       {/* Input */}
-      <div className="p-4 border-t border-white/10">
-        <div className="flex items-center gap-2 bg-white/5 rounded-xl px-4 py-2 border border-white/10 focus-within:border-orange-500/30 transition-all">
+      <div className="p-4 border-t border-[#e7c588]/25">
+        <div className="flex items-center gap-2 bg-[#0a0a0b]/5 rounded-xl px-4 py-2 border border-[#e7c588]/25 focus-within:border-primary-400/30 transition-all">
           <input
             ref={inputRef}
             type="text"
@@ -164,13 +164,13 @@ const ChatBot = ({ isOpen, onClose }) => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Ask about parking..."
-            className="flex-1 bg-transparent text-white text-sm placeholder-gray-500 focus:outline-none"
+            className="flex-1 bg-transparent text-[#f9f0d7] text-sm placeholder-gray-500 focus:outline-none"
             disabled={loading}
           />
           <button
             onClick={() => handleSend()}
             disabled={loading || !input.trim()}
-            className="w-8 h-8 rounded-lg bg-orange-500 hover:bg-orange-600 disabled:bg-white/10 disabled:cursor-not-allowed flex items-center justify-center text-white transition-all"
+            className="w-8 h-8 rounded-lg bg-[#0a0a0b]0 hover:bg-primary-400 disabled:bg-[#0a0a0b]/10 disabled:cursor-not-allowed flex items-center justify-center text-[#f9f0d7] transition-all"
           >
             {loading ? <FaSpinner className="animate-spin" /> : <FaPaperPlane className="text-xs" />}
           </button>

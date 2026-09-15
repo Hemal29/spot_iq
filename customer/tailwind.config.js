@@ -5,8 +5,29 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a' },
-        secondary: { 50: '#fff7ed', 100: '#ffedd5', 200: '#fed7aa', 300: '#fdba74', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c', 800: '#9a3412', 900: '#7c2d12' },
+        primary: {
+          50: '#fdfaf0',
+          100: '#f9f0d7',
+          200: '#f3e0ae',
+          300: '#eccd7f',
+          400: '#e7c588',
+          500: '#d9a94f',
+          600: '#bf8a2e',
+          700: '#9c6e24',
+          800: '#7a5620',
+          900: '#3d2f14',
+        },
+        noir: {
+          950: '#0a0a0b',
+          900: '#121214',
+          800: '#1c1c1f',
+          700: '#2a2a2e',
+        },
+        gold: {
+          DEFAULT: '#e7c588',
+          light: '#f3e0ae',
+          dark: '#bf8a2e',
+        },
       },
       fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
     },

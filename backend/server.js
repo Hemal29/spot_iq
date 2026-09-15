@@ -20,6 +20,8 @@ const reviewRoutes = require('./routes/reviewRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const chatbotRoutes = require('./routes/chatbotRoutes');
+const recommendationRoutes = require('./routes/recommendationRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
 
 const { errorHandler, notFound } = require('./middleware/error');
 
@@ -30,8 +32,10 @@ const corsOptions = {
     const allowedOrigins = [
       'http://localhost:3000',
       'http://localhost:3001',
+      'http://localhost:3002',
       'http://127.0.0.1:3000',
       'http://127.0.0.1:3001',
+      'http://127.0.0.1:3002',
     ];
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -64,6 +68,8 @@ app.use('/api/reviews', reviewRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/chatbot', chatbotRoutes);
+app.use('/api/recommendations', recommendationRoutes);
+app.use('/api/settings', settingsRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ success: true, message: 'Server is running' });

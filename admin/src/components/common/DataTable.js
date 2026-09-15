@@ -7,7 +7,7 @@ const LoadingSkeleton = ({ columns }) => (
       <tr key={row}>
         {columns.map((col, i) => (
           <td key={i} className="px-4 py-3">
-            <div className="h-4 bg-gray-200 rounded animate-pulse" style={{ width: col.width || '60%' }} />
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" style={{ width: col.width || '60%' }} />
           </td>
         ))}
       </tr>
@@ -58,7 +58,7 @@ const DataTable = ({
 
   const getSortIcon = (key) => {
     if (sortKey !== key) return <FaSort className="text-gray-300" />;
-    return sortDir === 'asc' ? <FaSortUp className="text-blue-600" /> : <FaSortDown className="text-blue-600" />;
+    return sortDir === 'asc' ? <FaSortUp className="text-gray-600 dark:text-gray-400" /> : <FaSortDown className="text-gray-600 dark:text-gray-400" />;
   };
 
   const pageNumbers = useMemo(() => {
@@ -114,7 +114,7 @@ const DataTable = ({
                 >
                   {columns.map((col) => (
                     <td key={col.key}>
-                      {col.render ? col.render(row) : row[col.key]}
+                      {col.render ? col.render(row[col.key], row) : row[col.key]}
                     </td>
                   ))}
                 </tr>
@@ -125,7 +125,7 @@ const DataTable = ({
       </div>
 
       {pagination && totalPages > 1 && (
-        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 bg-gray-50/50">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50/50">
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-500">Rows per page:</span>
             <select
@@ -143,13 +143,13 @@ const DataTable = ({
           </div>
 
           <div className="flex items-center gap-1">
-            <span className="text-sm text-gray-500 mr-2">
+            <span className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 mr-2">
               {(currentPage - 1) * pageSize + 1}-{Math.min(currentPage * pageSize, sortedData.length)} of {sortedData.length}
             </span>
             <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="p-1.5 rounded text-gray-500 hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-1.5 rounded text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 dark:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <FaChevronLeft className="text-xs" />
             </button>
@@ -159,8 +159,8 @@ const DataTable = ({
                 onClick={() => setCurrentPage(page)}
                 className={`w-8 h-8 text-sm rounded ${
                   page === currentPage
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-600 hover:bg-gray-200'
+                    ? 'bg-primary-400 text-white'
+                    : 'text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-200'
                 }`}
               >
                 {page}
@@ -169,7 +169,7 @@ const DataTable = ({
             <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="p-1.5 rounded text-gray-500 hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed"
+              className="p-1.5 rounded text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 dark:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <FaChevronRight className="text-xs" />
             </button>

@@ -8,6 +8,7 @@ import ErrorMessage from '../components/common/ErrorMessage';
 import Button from '../components/common/Button';
 import bookingService from '../services/bookingService';
 import parkingService from '../services/parkingService';
+import PageHero from '../components/common/PageHero';
 
 const STEPS = [
   { key: 'slot', label: 'Select Slot' },
@@ -72,7 +73,8 @@ export default function BookingPage() {
   if (!parking) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#0a0a0b]">
+      <PageHero title="Book Your" highlight="Spot" subtitle="Select a slot and confirm in seconds" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="mb-8">
           <div className="flex items-center justify-center gap-2 sm:gap-4">
@@ -82,15 +84,15 @@ export default function BookingPage() {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors ${
                       idx <= currentStep
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-200 text-gray-500'
+                        ? 'bg-primary-400 text-[#f9f0d7]'
+                        : 'bg-[#1c1c1f] dark:bg-[#1c1c1f] text-[#e7c588]/80'
                     }`}
                   >
                     {idx + 1}
                   </div>
                   <span
                     className={`hidden sm:block text-sm font-medium ${
-                      idx <= currentStep ? 'text-blue-600' : 'text-gray-400'
+                      idx <= currentStep ? 'text-[#e7c588]/80' : 'text-[#e7c588]/80'
                     }`}
                   >
                     {step.label}
@@ -99,7 +101,7 @@ export default function BookingPage() {
                 {idx < STEPS.length - 1 && (
                   <div
                     className={`w-8 sm:w-16 h-0.5 mx-2 ${
-                      idx < currentStep ? 'bg-blue-600' : 'bg-gray-200'
+                      idx < currentStep ? 'bg-primary-400' : 'bg-[#1c1c1f]'
                     }`}
                   />
                 )}
@@ -110,7 +112,7 @@ export default function BookingPage() {
 
         <div className="lg:flex lg:gap-8">
           <div className="flex-1 min-w-0">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="bg-[#0a0a0b] dark:bg-[#0a0a0b] rounded-xl shadow-sm border border-[#e7c588]/25 dark:border-[#e7c588]/25 p-6">
               {error && <div className="mb-4"><ErrorMessage message={error} /></div>}
 
               {currentStep === 0 && (
@@ -126,27 +128,27 @@ export default function BookingPage() {
               )}
               {currentStep === 2 && (
                 <div className="space-y-6">
-                  <h3 className="text-lg font-semibold text-gray-900">Review & Confirm</h3>
-                  <div className="bg-gray-50 rounded-lg p-4 space-y-2 text-sm">
+                  <h3 className="text-lg font-semibold text-[#f9f0d7]">Review & Confirm</h3>
+                  <div className="bg-[#0a0a0b] dark:bg-[#121214] rounded-lg p-4 space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Parking</span>
-                      <span className="font-medium text-gray-900">{parking.name}</span>
+                      <span className="text-[#e7c588]/80 dark:text-[#e7c588]/80">Parking</span>
+                      <span className="font-medium text-[#f9f0d7]">{parking.name}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Start</span>
-                      <span className="font-medium text-gray-900">
+                      <span className="text-[#e7c588]/80 dark:text-[#e7c588]/80">Start</span>
+                      <span className="font-medium text-[#f9f0d7]">
                         {bookingData.startTime ? new Date(bookingData.startTime).toLocaleString() : '-'}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">End</span>
-                      <span className="font-medium text-gray-900">
+                      <span className="text-[#e7c588]/80 dark:text-[#e7c588]/80">End</span>
+                      <span className="font-medium text-[#f9f0d7]">
                         {bookingData.endTime ? new Date(bookingData.endTime).toLocaleString() : '-'}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-500">Vehicle</span>
-                      <span className="font-medium text-gray-900">{bookingData.vehicleNumber || 'N/A'}</span>
+                      <span className="text-[#e7c588]/80 dark:text-[#e7c588]/80">Vehicle</span>
+                      <span className="font-medium text-[#f9f0d7]">{bookingData.vehicleNumber || 'N/A'}</span>
                     </div>
                   </div>
                   <div className="flex gap-3">

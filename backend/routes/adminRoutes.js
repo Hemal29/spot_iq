@@ -29,6 +29,7 @@ const {
   createNotification,
   markNotificationRead,
   markAllRead,
+  deleteNotification,
   getTickets,
   updateTicketStatus,
   assignTicket,
@@ -78,6 +79,7 @@ router.get('/notifications', getNotifications);
 router.post('/notifications', createNotification);
 router.put('/notifications/:id/read', markNotificationRead);
 router.put('/notifications/read-all', markAllRead);
+router.delete('/notifications/:id', deleteNotification);
 
 router.get('/tickets', getTickets);
 router.put('/tickets/:id/status', updateTicketStatus);

@@ -48,39 +48,39 @@ const ParkingFilter = () => {
   const filterContent = (
     <div className="space-y-6">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Search by City</label>
+        <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80 mb-1">Search by City</label>
         <div className="relative">
-          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[#e7c588]/80" />
           <input
             type="text" placeholder="Enter city name"
             value={localFilters.city}
             onChange={(e) => setLocalFilters({ ...localFilters, city: e.target.value })}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+            className="w-full pl-10 pr-4 py-2 border border-[#e7c588]/25 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Price Range</label>
+        <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80 mb-1">Price Range</label>
         <div className="flex items-center gap-2">
           <input
             type="number" placeholder="Min" min="0"
             value={localFilters.minPrice}
             onChange={(e) => setLocalFilters({ ...localFilters, minPrice: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+            className="w-full px-3 py-2 border border-[#e7c588]/25 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
           />
-          <span className="text-gray-400">-</span>
+          <span className="text-[#e7c588]/80 dark:text-[#e7c588]/80">-</span>
           <input
             type="number" placeholder="Max" min="0"
             value={localFilters.maxPrice}
             onChange={(e) => setLocalFilters({ ...localFilters, maxPrice: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+            className="w-full px-3 py-2 border border-[#e7c588]/25 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Amenities</label>
+        <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80 mb-2">Amenities</label>
         <div className="space-y-2">
           {amenitiesList.map((item) => (
             <label key={item.value} className="flex items-center gap-2 cursor-pointer">
@@ -88,22 +88,22 @@ const ParkingFilter = () => {
                 type="checkbox"
                 checked={localFilters.amenities.includes(item.value)}
                 onChange={() => handleAmenityToggle(item.value)}
-                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-[#e7c588]/25 rounded"
               />
-              <span className="text-sm text-gray-600">{item.label}</span>
+              <span className="text-sm text-[#e7c588]/80">{item.label}</span>
             </label>
           ))}
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80 mb-1">
           <FaSortAmountDown className="inline mr-1" /> Sort By
         </label>
         <select
           value={localFilters.sortBy}
           onChange={(e) => setLocalFilters({ ...localFilters, sortBy: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm bg-white"
+          className="w-full px-3 py-2 border border-[#e7c588]/25 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm bg-[#0a0a0b]"
         >
           {sortOptions.map((opt) => (
             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -112,10 +112,10 @@ const ParkingFilter = () => {
       </div>
 
       <div className="flex gap-2">
-        <button onClick={handleClear} className="flex-1 px-4 py-2 border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition text-sm font-medium">
+        <button onClick={handleClear} className="flex-1 px-4 py-2 border border-[#e7c588]/25 text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 rounded-lg hover:bg-[#0a0a0b] dark:hover:bg-[#121214] dark:bg-[#121214] transition text-sm font-medium">
           Clear Filters
         </button>
-        <button onClick={handleApply} className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition text-sm font-medium">
+        <button onClick={handleApply} className="flex-1 px-4 py-2 bg-primary-600 text-[#f9f0d7] rounded-lg hover:bg-primary-700 transition text-sm font-medium">
           Apply
         </button>
       </div>
@@ -126,14 +126,14 @@ const ParkingFilter = () => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="lg:hidden fixed bottom-6 right-6 z-40 bg-primary-600 text-white p-4 rounded-full shadow-lg hover:bg-primary-700 transition"
+        className="lg:hidden fixed bottom-6 right-6 z-40 bg-primary-600 text-[#f9f0d7] p-4 rounded-full shadow-lg hover:bg-primary-700 transition"
       >
         <FaSlidersH />
       </button>
 
       <div className="hidden lg:block w-72 shrink-0">
-        <div className="bg-white rounded-xl shadow-md p-5 sticky top-24">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Filters</h3>
+        <div className="bg-[#0a0a0b] dark:bg-[#0a0a0b] rounded-xl shadow-md p-5 sticky top-24">
+          <h3 className="text-lg font-semibold text-[#f9f0d7] mb-4">Filters</h3>
           {filterContent}
         </div>
       </div>
@@ -141,10 +141,10 @@ const ParkingFilter = () => {
       {isOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/50" onClick={() => setIsOpen(false)} />
-          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl p-6 animate-slideUp max-h-[85vh] overflow-y-auto">
+          <div className="absolute bottom-0 left-0 right-0 bg-[#0a0a0b] dark:bg-[#0a0a0b] rounded-t-2xl p-6 animate-slideUp max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-800">Filters</h3>
-              <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-gray-600">
+              <h3 className="text-lg font-semibold text-[#f9f0d7]">Filters</h3>
+              <button onClick={() => setIsOpen(false)} className="text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:text-[#e7c588]/80">
                 <FaTimes size={20} />
               </button>
             </div>

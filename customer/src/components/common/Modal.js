@@ -32,17 +32,17 @@ const Modal = ({ isOpen, onClose, title, children, size = 'md' }) => {
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fadeIn"
+        className="absolute inset-0 bg-black/50  animate-fadeIn"
         onClick={onClose}
       />
       <div
-        className={`relative w-full ${sizeClasses[size] || sizeClasses.md} bg-white dark:bg-gray-800 rounded-2xl shadow-2xl animate-slideUp z-10`}
+        className={`relative w-full ${sizeClasses[size] || sizeClasses.md} bg-[#0a0a0b] dark:bg-[#0a0a0b] rounded-2xl shadow-2xl animate-slideUp z-10`}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e7c588]/25">
+          <h2 className="text-lg font-semibold text-[#f9f0d7] dark:text-[#f9f0d7] ">{title}</h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:text-gray-300 dark:hover:bg-gray-700 transition-colors"
+            className="p-1.5 rounded-lg text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:bg-[#121214] dark:hover:bg-[#1c1c1f]/50 dark:bg-[#121214] :bg-[#1c1c1f] transition-colors"
           >
             <FaTimes className="text-lg" />
           </button>

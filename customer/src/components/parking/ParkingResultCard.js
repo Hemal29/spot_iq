@@ -30,15 +30,15 @@ const ParkingResultCard = ({ parking }) => {
   return (
     <div
       onClick={() => navigate(`/parking/${_id}`)}
-      className="group cursor-pointer bg-[#1E293B] border border-white/10 rounded-2xl overflow-hidden transition-all duration-500 hover:border-orange-500/30 hover:shadow-2xl hover:shadow-orange-500/10 hover:-translate-y-1"
+      className="group cursor-pointer bg-[#121214] border border-[#e7c588]/25 rounded-2xl overflow-hidden transition-all duration-500 hover:border-primary-400/30 hover:shadow-2xl hover:shadow-primary-400/10 hover:-translate-y-1 h-full flex flex-col"
     >
       {/* Image */}
-      <div className="relative h-48 bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden">
+      <div className="relative h-36 sm:h-44 xl:h-48 bg-gradient-to-br from-[#121214] to-black overflow-hidden">
         {images && images.length > 0 ? (
           <>
             {!imageLoaded && (
-              <div className="absolute inset-0 bg-gray-800 animate-pulse flex items-center justify-center">
-                <FaParking className="text-gray-600 text-4xl" />
+              <div className="absolute inset-0 bg-[#121214] animate-pulse flex items-center justify-center">
+                <FaParking className="text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 text-4xl" />
               </div>
             )}
             <img
@@ -49,43 +49,43 @@ const ParkingResultCard = ({ parking }) => {
             />
           </>
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-900/40 to-gray-900">
-            <FaParking className="text-orange-400/30 text-6xl" />
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#0a0a0b]/40 to-black">
+            <FaParking className="text-[#e7c588]/30 text-6xl" />
           </div>
         )}
 
         {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1E293B] via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#121214] via-transparent to-transparent" />
 
         {/* Price badge */}
-        <div className="absolute top-3 right-3 bg-white/10 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-xl">
-          <span className="text-white font-bold text-sm">₹{pricePerHour}</span>
-          <span className="text-gray-400 text-xs">/hr</span>
+        <div className="absolute top-3 right-3 bg-[#0a0a0b]/10  border border-[#e7c588]/25 px-3 py-1.5 rounded-xl">
+          <span className="text-[#f9f0d7] font-bold text-sm">₹{pricePerHour}</span>
+          <span className="text-[#e7c588]/80 dark:text-[#e7c588]/80 text-xs">/hr</span>
         </div>
 
         {/* Favorite button */}
         <button
           onClick={(e) => { e.stopPropagation(); setFavorited(!favorited); }}
-          className="absolute top-3 left-3 w-9 h-9 bg-white/10 backdrop-blur-md border border-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-all"
+          className="absolute top-3 left-3 w-9 h-9 bg-[#0a0a0b]/10  border border-[#e7c588]/25 rounded-full flex items-center justify-center hover:bg-[#0a0a0b]/20 transition-all"
         >
           {favorited ? (
-            <FaHeart className="text-red-400 transition-all duration-300 scale-110" />
+            <FaHeart className="text-[#e7c588] transition-all duration-300 scale-110" />
           ) : (
-            <FaRegHeart className="text-gray-300" />
+            <FaRegHeart className="text-[#e7c588]/80" />
           )}
         </button>
 
         {/* Availability bar */}
         <div className="absolute bottom-3 left-3 right-3">
           <div className="flex items-center justify-between text-xs mb-1">
-            <span className="text-gray-300 font-medium">{availableSlots} / {totalSlots} available</span>
-            <span className={availabilityPercent > 30 ? 'text-green-400' : 'text-orange-400'}>
+            <span className="text-[#e7c588]/80 font-medium">{availableSlots} / {totalSlots} available</span>
+            <span className={availabilityPercent > 30 ? 'text-primary-400' : 'text-[#e7c588]/80'}>
               {availabilityPercent}%
             </span>
           </div>
-          <div className="h-1 bg-white/10 rounded-full overflow-hidden">
+          <div className="h-1 bg-[#0a0a0b]/10 rounded-full overflow-hidden">
             <div
-              className={`h-full rounded-full transition-all duration-700 ${availabilityPercent > 50 ? 'bg-green-500' : availabilityPercent > 20 ? 'bg-orange-500' : 'bg-red-500'}`}
+              className={`h-full rounded-full transition-all duration-700 ${availabilityPercent > 50 ? 'bg-[#0a0a0b]0' : availabilityPercent > 20 ? 'bg-[#0a0a0b]0' : 'bg-[#e7c588]'}`}
               style={{ width: `${availabilityPercent}%` }}
             />
           </div>
@@ -93,61 +93,65 @@ const ParkingResultCard = ({ parking }) => {
       </div>
 
       {/* Content */}
-      <div className="p-5">
+      <div className="p-4 sm:p-5 flex flex-col flex-1">
         {/* Name + Rating */}
         <div className="flex items-start justify-between mb-2">
-          <h3 className="text-lg font-semibold text-white group-hover:text-orange-400 transition-colors truncate">{displayName}</h3>
-          <div className="flex items-center gap-1 text-yellow-400 text-sm ml-2 flex-shrink-0">
+          <h3 className="text-base sm:text-lg font-semibold text-[#f9f0d7] group-hover:text-[#e7c588]/80 dark:text-[#e7c588]/80 transition-colors truncate">{displayName}</h3>
+          <div className="flex items-center gap-1 text-primary-400 text-xs sm:text-sm ml-2 flex-shrink-0">
             <FaStar />
-            <span className="text-white font-medium">{rating || '—'}</span>
+            <span className="text-[#f9f0d7] font-medium">{rating || '—'}</span>
           </div>
         </div>
 
         {/* Address */}
-        <p className="text-sm text-gray-400 flex items-center gap-1.5 mb-3">
-          <FaMapMarkerAlt className="text-orange-400/70 flex-shrink-0" />
-          <span className="truncate">{address || 'Ahmedabad'}</span>
-          {city && <span className="text-gray-600">· {city}</span>}
-        </p>
+        <div className="mb-3">
+          <p className="text-xs sm:text-sm text-[#e7c588]/80 dark:text-[#e7c588]/80 flex items-center gap-1.5">
+            <FaMapMarkerAlt className="text-[#e7c588]/70 flex-shrink-0 mt-0.5" />
+            <span className="truncate">{address || 'Ahmedabad'}</span>
+          </p>
+          {city && (
+            <p className="text-[11px] sm:text-xs text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 ml-5 mt-0.5">{city}</p>
+          )}
+        </div>
 
         {/* Quick info chips */}
-        <div className="flex flex-wrap items-center gap-2 mb-4">
-          <span className="text-xs px-2.5 py-1 bg-white/5 rounded-full text-gray-400 flex items-center gap-1">
-            <FaWalking className="text-green-400" /> {walkingTime} min
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-4">
+          <span className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#0a0a0b]/5 rounded-full text-[#e7c588]/80 dark:text-[#e7c588]/80 flex items-center gap-1">
+            <FaWalking className="text-primary-400 text-[10px] sm:text-xs" /> {walkingTime} min
           </span>
           {amenities?.includes('evCharging') && (
-            <span className="text-xs px-2.5 py-1 bg-green-500/10 rounded-full text-green-400 flex items-center gap-1">
-              <FaChargingStation /> EV
+            <span className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#0a0a0b]0/10 rounded-full text-primary-400 flex items-center gap-1">
+              <FaChargingStation className="text-[10px] sm:text-xs" /> EV
             </span>
           )}
           {amenities?.includes('covered') && (
-            <span className="text-xs px-2.5 py-1 bg-blue-500/10 rounded-full text-blue-400 flex items-center gap-1">
-              <FaUmbrella /> Covered
+            <span className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#0a0a0b]0/10 rounded-full text-[#e7c588]/80 dark:text-[#e7c588]/80 flex items-center gap-1">
+              <FaUmbrella className="text-[10px] sm:text-xs" /> Covered
             </span>
           )}
           {amenities?.includes('cctv') && (
-            <span className="text-xs px-2.5 py-1 bg-purple-500/10 rounded-full text-purple-400 flex items-center gap-1">
-              <FaShieldAlt /> CCTV
+            <span className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#0a0a0b]0/10 rounded-full text-primary-400 flex items-center gap-1">
+              <FaShieldAlt className="text-[10px] sm:text-xs" /> CCTV
             </span>
           )}
-          <span className="text-xs px-2.5 py-1 bg-orange-500/10 rounded-full text-orange-400 flex items-center gap-1">
-            <FaClock /> 24/7
+          <span className="text-[10px] sm:text-xs px-2 sm:px-2.5 py-0.5 sm:py-1 bg-[#0a0a0b]0/10 rounded-full text-[#e7c588]/80 dark:text-[#e7c588]/80 flex items-center gap-1">
+            <FaClock className="text-[10px] sm:text-xs" /> 24/7
           </span>
         </div>
 
         {/* Buttons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 mt-auto">
           <button
             onClick={handleViewDetails}
-            className="flex-1 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300 hover:text-white rounded-xl text-sm font-medium transition-all"
+            className="flex-1 py-2 sm:py-2.5 bg-[#0a0a0b]/5 hover:bg-[#0a0a0b]/10 border border-[#e7c588]/25 text-[#e7c588]/80 hover:text-[#f9f0d7] rounded-xl text-xs sm:text-sm font-medium transition-all"
           >
             View Details
           </button>
           <button
             onClick={handleBookNow}
-            className="flex-1 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-orange-500/20 flex items-center justify-center gap-1"
+            className="flex-1 py-2 sm:py-2.5 bg-primary-500 hover:bg-primary-600 text-[#f9f0d7] rounded-xl text-xs sm:text-sm font-semibold transition-all shadow-lg shadow-primary-400/20 flex items-center justify-center gap-1"
           >
-            Book Now <FaArrowRight className="text-xs" />
+            Book Now <FaArrowRight className="text-[10px] sm:text-xs" />
           </button>
         </div>
       </div>

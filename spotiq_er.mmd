@@ -1,0 +1,274 @@
+erDiagram
+    Customer ||--o{ Vehicle : owns
+    Customer ||--o{ Booking : makes
+    Customer ||--o{ Review : writes
+    Customer ||--o{ Notification : receives
+    Customer ||--o{ SupportTicket : creates
+    Vehicle }o--|| VehicleType : belongs_to
+    Booking }o--|| ParkingSlot : reserves
+    Booking ||--|| Payment : generates
+    Booking }o--o| Coupon : uses
+    Payment }o--|| PaymentMethod : uses
+    Payment ||--|| Transaction : creates
+    Transaction ||--|| Invoice : generates
+    ParkingOwner ||--o{ Parking : manages
+    Parking ||--o{ ParkingSlot : contains
+    Parking ||--o{ ParkingZone : has
+    Parking ||--o{ ParkingImage : has
+    Parking ||--o{ Pricing : has
+    Parking ||--o{ Availability : has
+    Parking }o--o{ Amenity : offers
+    Parking ||--o{ ParkingAmenity : has
+    ParkingAmenity }o--|| Amenity : of_type
+    ParkingSlot }o--|| SlotType : belongs_to
+    ParkingSlot ||--o{ SlotImage : has
+    Review }o--|| Parking : for
+    Notification }o--|| NotificationType : sent_via
+    Admin }o--|| Role : assigned_to
+    Role }o--o{ Permission : has
+    Admin ||--o{ Reports : generates
+    Admin }o--o{ Parking : manages
+    Admin }o--o{ Booking : oversees
+    Admin }o--o{ Customer : administers
+    Admin ||--o{ Coupon : manages
+    Admin ||--o{ ParkingOwner : verifies
+    SupportTicket }o--o| Admin : assigned_to
+
+    Customer {
+        int customer_id PK
+        varchar full_name
+        varchar email UK
+        varchar phone
+        varchar password
+        varchar profile_image
+        datetime created_at
+        enum status
+    }
+    Admin {
+        int admin_id PK
+        varchar full_name
+        varchar email UK
+        varchar password
+        enum role
+        datetime last_login
+        datetime created_at
+    }
+    ParkingOwner {
+        int owner_id PK
+        varchar full_name
+        varchar email UK
+        varchar phone
+        varchar password
+        varchar business_name
+        enum verification_status
+        datetime created_at
+    }
+    Vehicle {
+        int vehicle_id PK
+        int customer_id FK
+        varchar vehicle_number UK
+        int vehicle_type_id FK
+        varchar model
+        varchar color
+        varchar manufacturer
+        int year
+    }
+    VehicleType {
+        int vehicle_type_id PK
+        varchar type_name UK
+        varchar icon
+        enum slot_size_required
+    }
+    Parking {
+        int parking_id PK
+        int owner_id FK
+        varchar parking_name
+        text address
+        varchar city
+        decimal latitude
+        decimal longitude
+        int total_slots
+        decimal price_per_hour
+        time opening_time
+        time closing_time
+        enum status
+    }
+    ParkingSlot {
+        int slot_id PK
+        int parking_id FK
+        varchar slot_number
+        int slot_type_id FK
+        varchar floor
+        boolean availability
+        enum status
+    }
+    SlotType {
+        int slot_type_id PK
+        varchar type_name UK
+        text description
+        decimal base_price
+    }
+    ParkingZone {
+        int zone_id PK
+        int parking_id FK
+        varchar zone_name
+        int capacity
+        decimal rate_multiplier
+    }
+    ParkingImage {
+        int image_id PK
+        int parking_id FK
+        varchar image_url
+        varchar caption
+        boolean is_primary
+        datetime uploaded_at
+    }
+    SlotImage {
+        int image_id PK
+        int slot_id FK
+        varchar image_url
+        varchar caption
+        datetime uploaded_at
+    }
+    Booking {
+        int booking_id PK
+        int customer_id FK
+        int slot_id FK
+        int vehicle_id FK
+        int coupon_id FK
+        date booking_date
+        time start_time
+        time end_time
+        decimal total_amount
+        enum booking_status
+    }
+    Payment {
+        int payment_id PK
+        int booking_id FK
+        int payment_method_id FK
+        decimal amount
+        enum payment_status
+        varchar transaction_id
+        datetime payment_date
+    }
+    PaymentMethod {
+        int payment_method_id PK
+        varchar method_name UK
+        varchar provider
+        boolean is_active
+    }
+    Transaction {
+        int transaction_id PK
+        int payment_id FK
+        varchar gateway_ref
+        decimal amount
+        enum status
+        datetime initiated_at
+        datetime completed_at
+    }
+    Invoice {
+        int invoice_id PK
+        int transaction_id FK
+        varchar invoice_number UK
+        decimal amount
+        decimal tax
+        decimal total
+        datetime generated_at
+        date due_date
+    }
+    Coupon {
+        int coupon_id PK
+        varchar coupon_code UK
+        enum discount_type
+        decimal discount_value
+        decimal min_amount
+        decimal max_discount
+        date expiry_date
+        enum status
+        int usage_limit
+    }
+    Review {
+        int review_id PK
+        int customer_id FK
+        int parking_id FK
+        int rating
+        text review
+        datetime created_at
+        datetime updated_at
+    }
+    Notification {
+        int notification_id PK
+        int customer_id FK
+        int notification_type_id FK
+        varchar title
+        text message
+        boolean is_read
+        datetime created_at
+    }
+    NotificationType {
+        int notification_type_id PK
+        varchar type_name UK
+        text template
+        boolean is_push
+        boolean is_email
+    }
+    SupportTicket {
+        int ticket_id PK
+        int customer_id FK
+        varchar subject
+        text description
+        enum status
+        enum priority
+        int assigned_to FK
+        datetime created_at
+        datetime resolved_at
+    }
+    Role {
+        int role_id PK
+        varchar role_name UK
+        text description
+        boolean is_system
+    }
+    Permission {
+        int permission_id PK
+        varchar permission_name UK
+        varchar resource
+        varchar action
+        text description
+    }
+    Amenity {
+        int amenity_id PK
+        varchar amenity_name UK
+        varchar icon
+        text description
+    }
+    ParkingAmenity {
+        int parking_amenity_id PK
+        int parking_id FK
+        int amenity_id FK
+        boolean is_free
+        decimal charge
+    }
+    Pricing {
+        int pricing_id PK
+        int parking_id FK
+        int slot_type_id FK
+        decimal base_price
+        decimal peak_price
+        decimal night_price
+        decimal weekend_price
+    }
+    Availability {
+        int availability_id PK
+        int parking_id FK
+        date date
+        int available_slots
+        boolean is_holiday
+    }
+    Reports {
+        int report_id PK
+        int generated_by FK
+        varchar report_type
+        json data
+        datetime created_at
+    }

@@ -13,7 +13,7 @@ const getPasswordStrength = (pw) => {
 };
 
 const strengthLabels = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
-const strengthColors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500', 'bg-green-600'];
+const strengthColors = ['bg-[#e7c588]', 'bg-[#0a0a0b]0', 'bg-[#0a0a0b]0', 'bg-[#0a0a0b]0', 'bg-primary-400'];
 
 const requirements = [
   { label: 'At least 6 characters', test: (pw) => pw.length >= 6 },
@@ -67,51 +67,51 @@ const ChangePassword = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">Change Password</h3>
+    <div className="bg-[#0a0a0b] dark:bg-[#0a0a0b] rounded-xl shadow-md p-6">
+      <h3 className="text-lg font-semibold text-[#f9f0d7] mb-4">Change Password</h3>
 
       {success && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4 text-sm flex items-center gap-2">
+        <div className="bg-[#0a0a0b] dark:bg-[#121214] border border-[#e7c588]/25 dark:border-[#e7c588]/25 text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 px-4 py-3 rounded-lg mb-4 text-sm flex items-center gap-2">
           <FaCheckCircle /> Password changed successfully!
         </div>
       )}
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm flex items-center gap-2">
+        <div className="bg-[#e7c588] border border-[#e7c588]/40 text-[#e7c588] px-4 py-3 rounded-lg mb-4 text-sm flex items-center gap-2">
           <FaTimesCircle /> {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+          <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80 mb-1">Current Password</label>
           <div className="relative">
-            <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#e7c588]/80" />
             <input
               type={showFields.current ? 'text' : 'password'}
               value={formData.currentPassword}
               onChange={(e) => { setFormData({ ...formData, currentPassword: e.target.value }); if (error) setError(''); }}
               placeholder="Enter current password"
-              className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+              className="w-full pl-10 pr-10 py-2.5 border border-[#e7c588]/25 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
             />
-            <button type="button" onClick={() => setShowFields({ ...showFields, current: !showFields.current })} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            <button type="button" onClick={() => setShowFields({ ...showFields, current: !showFields.current })} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:text-[#e7c588]/80">
               {showFields.current ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+          <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80 mb-1">New Password</label>
           <div className="relative">
-            <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#e7c588]/80" />
             <input
               type={showFields.new ? 'text' : 'password'}
               value={formData.newPassword}
               onChange={(e) => { setFormData({ ...formData, newPassword: e.target.value }); if (error) setError(''); }}
               placeholder="Enter new password"
-              className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+              className="w-full pl-10 pr-10 py-2.5 border border-[#e7c588]/25 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
             />
-            <button type="button" onClick={() => setShowFields({ ...showFields, new: !showFields.new })} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            <button type="button" onClick={() => setShowFields({ ...showFields, new: !showFields.new })} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:text-[#e7c588]/80">
               {showFields.new ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
@@ -119,15 +119,15 @@ const ChangePassword = () => {
             <div className="mt-2">
               <div className="flex gap-1 mb-2">
                 {[0, 1, 2, 3, 4].map((i) => (
-                  <div key={i} className={`h-1.5 flex-1 rounded-full ${i < strength ? strengthColors[strength - 1] : 'bg-gray-200'} transition`} />
+                  <div key={i} className={`h-1.5 flex-1 rounded-full ${i < strength ? strengthColors[strength - 1] : 'bg-[#1c1c1f]'} transition`} />
                 ))}
               </div>
-              <p className="text-xs text-gray-500 mb-2">Strength: {strengthLabels[strength - 1] || 'None'}</p>
+              <p className="text-xs text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 mb-2">Strength: {strengthLabels[strength - 1] || 'None'}</p>
               <ul className="space-y-1">
                 {requirements.map((req, i) => {
                   const met = req.test(formData.newPassword);
                   return (
-                    <li key={i} className={`text-xs flex items-center gap-1.5 ${met ? 'text-green-600' : 'text-gray-400'}`}>
+                    <li key={i} className={`text-xs flex items-center gap-1.5 ${met ? 'text-primary-400' : 'text-[#e7c588]/80'}`}>
                       {met ? <FaCheckCircle /> : <FaTimesCircle />} {req.label}
                     </li>
                   );
@@ -138,17 +138,17 @@ const ChangePassword = () => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+          <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80 mb-1">Confirm New Password</label>
           <div className="relative">
-            <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#e7c588]/80" />
             <input
               type={showFields.confirm ? 'text' : 'password'}
               value={formData.confirmPassword}
               onChange={(e) => { setFormData({ ...formData, confirmPassword: e.target.value }); if (error) setError(''); }}
               placeholder="Confirm new password"
-              className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+              className="w-full pl-10 pr-10 py-2.5 border border-[#e7c588]/25 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
             />
-            <button type="button" onClick={() => setShowFields({ ...showFields, confirm: !showFields.confirm })} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+            <button type="button" onClick={() => setShowFields({ ...showFields, confirm: !showFields.confirm })} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:text-[#e7c588]/80">
               {showFields.confirm ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
@@ -156,7 +156,7 @@ const ChangePassword = () => {
 
         <button
           type="submit" disabled={loading}
-          className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2.5 rounded-lg transition flex items-center justify-center gap-2 text-sm disabled:opacity-60"
+          className="w-full bg-primary-600 hover:bg-primary-700 text-[#f9f0d7] font-medium py-2.5 rounded-lg transition flex items-center justify-center gap-2 text-sm disabled:opacity-60"
         >
           {loading ? <FaSpinner className="animate-spin" /> : null}
           {loading ? 'Changing...' : 'Change Password'}

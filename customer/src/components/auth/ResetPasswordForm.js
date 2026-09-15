@@ -14,7 +14,7 @@ const getPasswordStrength = (pw) => {
 };
 
 const strengthLabels = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
-const strengthColors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500', 'bg-green-600'];
+const strengthColors = ['bg-[#e7c588]', 'bg-[#0a0a0b]0', 'bg-[#0a0a0b]0', 'bg-[#0a0a0b]0', 'bg-primary-400'];
 
 const ResetPasswordForm = () => {
   const { token } = useParams();
@@ -56,16 +56,16 @@ const ResetPasswordForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gray-50">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 animate-slideUp">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-[#0a0a0b]">
+      <div className="w-full max-w-md bg-[#0a0a0b] dark:bg-[#0a0a0b] rounded-2xl shadow-xl p-8 animate-slideUp">
         {success ? (
           <div className="text-center">
-            <FaCheckCircle className="text-green-500 text-5xl mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">Password Reset!</h2>
-            <p className="text-gray-500 mb-6">Your password has been successfully reset.</p>
+            <FaCheckCircle className="text-primary-400 text-5xl mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-[#f9f0d7] mb-2">Password Reset!</h2>
+            <p className="text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 mb-6">Your password has been successfully reset.</p>
             <Link
               to="/login"
-              className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-6 py-2.5 rounded-lg transition"
+              className="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-[#f9f0d7] font-semibold px-6 py-2.5 rounded-lg transition"
             >
               Go to Login
             </Link>
@@ -74,34 +74,34 @@ const ResetPasswordForm = () => {
           <>
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-primary-600">Reset Password</h2>
-              <p className="text-gray-500 mt-2">Enter your new password</p>
+              <p className="text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 mt-2">Enter your new password</p>
             </div>
 
             {!token && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm flex items-center gap-2">
+              <div className="bg-[#e7c588] border border-[#e7c588]/40 text-[#e7c588] px-4 py-3 rounded-lg mb-4 text-sm flex items-center gap-2">
                 <FaExclamationCircle /> Invalid or missing reset token.
               </div>
             )}
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm">
+              <div className="bg-[#e7c588] border border-[#e7c588]/40 text-[#e7c588] px-4 py-3 rounded-lg mb-4 text-sm">
                 {error}
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80 mb-1">New Password</label>
                 <div className="relative">
-                  <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#e7c588]/80" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={passwords.password}
                     onChange={(e) => { setPasswords({ ...passwords, password: e.target.value }); if (error) setError(''); }}
                     placeholder="Min. 6 characters"
-                    className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
+                    className="w-full pl-10 pr-10 py-2.5 border border-[#e7c588]/25 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
                   />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:text-[#e7c588]/80">
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
@@ -109,26 +109,26 @@ const ResetPasswordForm = () => {
                   <div className="mt-2">
                     <div className="flex gap-1">
                       {[0, 1, 2, 3, 4].map((i) => (
-                        <div key={i} className={`h-1.5 flex-1 rounded-full ${i < strength ? strengthColors[strength - 1] : 'bg-gray-200'} transition`} />
+                        <div key={i} className={`h-1.5 flex-1 rounded-full ${i < strength ? strengthColors[strength - 1] : 'bg-[#1c1c1f]'} transition`} />
                       ))}
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">Strength: {strengthLabels[strength - 1] || 'None'}</p>
+                    <p className="text-xs text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 mt-1">Strength: {strengthLabels[strength - 1] || 'None'}</p>
                   </div>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80 mb-1">Confirm New Password</label>
                 <div className="relative">
-                  <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <FaLock className="absolute left-3 top-1/2 -translate-y-1/2 text-[#e7c588]/80" />
                   <input
                     type={showConfirm ? 'text' : 'password'}
                     value={passwords.confirmPassword}
                     onChange={(e) => { setPasswords({ ...passwords, confirmPassword: e.target.value }); if (error) setError(''); }}
                     placeholder="Confirm your new password"
-                    className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
+                    className="w-full pl-10 pr-10 py-2.5 border border-[#e7c588]/25 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
                   />
-                  <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                  <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3 top-1/2 -translate-y-1/2 text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:text-[#e7c588]/80">
                     {showConfirm ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
@@ -136,7 +136,7 @@ const ResetPasswordForm = () => {
 
               <button
                 type="submit" disabled={loading || !token}
-                className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 rounded-lg transition flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                className="w-full bg-primary-600 hover:bg-primary-700 text-[#f9f0d7] font-semibold py-2.5 rounded-lg transition flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {loading ? <FaSpinner className="animate-spin" /> : null}
                 {loading ? 'Resetting...' : 'Reset Password'}

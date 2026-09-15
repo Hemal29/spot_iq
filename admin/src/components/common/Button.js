@@ -2,13 +2,13 @@ import React from 'react';
 
 const variantClasses = {
   primary:
-    'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 active:bg-blue-800',
+    'bg-primary-400 text-white hover:bg-primary-500 focus:ring-primary-400 active:bg-primary-600',
   secondary:
-    'bg-orange-500 text-white hover:bg-orange-600 focus:ring-orange-500 active:bg-orange-700',
+    'bg-gray-500 text-white hover:bg-primary-400 focus:ring-primary-400 active:bg-primary-500',
   outline:
-    'border-2 border-blue-600 text-blue-600 hover:bg-blue-50 focus:ring-blue-500',
+    'border-2 border-gray-600 text-gray-600 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800 focus:ring-primary-400',
   ghost:
-    'text-gray-700 hover:bg-gray-100 focus:ring-gray-500',
+    'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700/50 dark:bg-gray-800 focus:ring-gray-500',
   danger:
     'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 active:bg-red-800',
 };

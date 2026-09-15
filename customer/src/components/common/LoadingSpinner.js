@@ -25,7 +25,7 @@ const LoadingSpinner = ({ size = 'md', fullPage = false, color = '#2563EB' }) =>
 
   if (fullPage) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 dark:bg-gray-950/80">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0a0a0b]/80 /80">
         {spinner}
       </div>
     );

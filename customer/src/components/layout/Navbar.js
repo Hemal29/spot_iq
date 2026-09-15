@@ -1,455 +1,842 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { NavLink, Link, useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  FaParking, FaUser, FaCaretDown, FaSignOutAlt, FaBell, FaCar,
-  FaCog, FaBars, FaTimes, FaSun, FaMoon, FaSearch, FaMapMarkerAlt,
-  FaRupeeSign, FaQuestionCircle, FaHeadset, FaCalendarCheck, FaRobot, FaCommentDots,
+  FaUser, FaSignOutAlt, FaBell, FaCar, FaCog, FaBars, FaTimes,
+  FaSun, FaMoon, FaSearch, FaMapMarkerAlt, FaCalendarCheck, FaHeart,
+  FaStar, FaWallet, FaQuestionCircle, FaArrowRight, FaMicrophone,
+  FaMicrophoneSlash, FaChevronRight, FaHistory, FaExclamationTriangle,
 } from 'react-icons/fa';
 import { useAuth } from '../../context/AuthContext';
 import { useApp } from '../../context/AppContext';
 import { useParking } from '../../context/ParkingContext';
-import ChatBot from '../chatbot/ChatBot';
-
-const cities = [
-  { name: 'Ahmedabad', value: 'Ahmedabad' },
-  { name: 'Surat', value: 'Surat' },
-  { name: 'Vadodara', value: 'Vadodara' },
-  { name: 'Rajkot', value: 'Rajkot' },
-  { name: 'All Cities', value: '' },
-];
 
 const navLinks = [
   { path: '/', label: 'Home' },
   { path: '/find-parking', label: 'Find Parking' },
   { path: '/my-bookings', label: 'My Bookings' },
+  { path: '/find-parking', label: 'AI Insights', isPlaceholder: true },
+  { path: '/find-parking', label: 'Saved Parking', isPlaceholder: true },
+  { path: '/find-parking', label: 'EV Charging', isPlaceholder: true },
+  { path: '/find-parking', label: 'Monthly Passes', isPlaceholder: true },
+  { path: '/my-bookings', label: 'Wallet', isPlaceholder: true },
+  { path: '/my-bookings', label: 'Rewards', isPlaceholder: true },
+  { path: '/contact', label: 'Support' },
+  { path: '/contact', label: 'Contact' },
 ];
+
+const profileMenuItems = [
+  { label: 'My Profile', path: '/profile', icon: FaUser },
+  { label: 'My Vehicles', path: '/profile', icon: FaCar },
+  { label: 'Wallet', path: '/my-bookings', icon: FaWallet },
+  { label: 'Booking History', path: '/my-bookings', icon: FaHistory },
+  { label: 'Rewards', path: '/my-bookings', icon: FaStar },
+  { label: 'Settings', path: '/profile', icon: FaCog },
+  { label: 'Help Center', path: '/contact', icon: FaQuestionCircle },
+];
+
+const cities = ['Ahmedabad', 'Surat', 'Vadodara', 'Rajkot'];
+
+const dummyNotifications = {
+  today: [
+    { id: 1, title: 'Booking Confirmed', desc: 'Your parking at MG Road is confirmed.', time: '2m ago', icon: FaCalendarCheck },
+    { id: 2, title: 'Payment Received', desc: '\u20b9250 payment processed.', time: '1h ago', icon: FaWallet },
+  ],
+  yesterday: [
+    { id: 3, title: 'Reward Earned', desc: 'You earned 50 points!', time: '1d ago', icon: FaStar },
+  ],
+  earlier: [
+    { id: 4, title: 'Welcome to SpotIQ', desc: 'Complete your profile.', time: '3d ago', icon: FaUser },
+  ],
+};
 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const { theme, toggleTheme, notifications } = useApp();
   const { filters, setFilters } = useParking();
   const navigate = useNavigate();
+  const location = useLocation();
 
+  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
   const [cityOpen, setCityOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [chatbotOpen, setChatbotOpen] = useState(false);
-  const dropdownRef = useRef(null);
+
+  // Voice search state
+  const [isListening, setIsListening] = useState(false);
+  const [voiceStatus, setVoiceStatus] = useState('idle'); // idle | listening | processing | error
+  const [voiceError, setVoiceError] = useState('');
+  const [voiceTooltip, setVoiceTooltip] = useState('Click to search by voice');
+  const recognitionRef = useRef(null);
+
+  const profileRef = useRef(null);
+  const notifRef = useRef(null);
   const cityRef = useRef(null);
-  const searchInputRef = useRef(null);
+  const navScrollRef = useRef(null);
+
+  const unreadCount = notifications?.length || 0;
+
+  const handleScroll = useCallback(() => setScrolled(window.scrollY > 20), []);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setDropdownOpen(false);
-      }
-      if (cityRef.current && !cityRef.current.contains(e.target)) {
-        setCityOpen(false);
-      }
+      if (profileRef.current && !profileRef.current.contains(e.target)) setProfileOpen(false);
+      if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false);
+      if (cityRef.current && !cityRef.current.contains(e.target)) setCityOpen(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   useEffect(() => {
-    if (searchOpen && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, [searchOpen]);
+    setMobileOpen(false);
+    setProfileOpen(false);
+    setNotifOpen(false);
+    setCityOpen(false);
+  }, [location.pathname]);
 
-  const closeMobile = () => setMobileOpen(false);
+  // Voice search: check browser support
+  const SpeechRecognition = typeof window !== 'undefined'
+    ? window.SpeechRecognition || window.webkitSpeechRecognition
+    : null;
+  const isVoiceSupported = !!SpeechRecognition;
+
+  // Cleanup recognition on unmount
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        try { recognitionRef.current.abort(); } catch {}
+      }
+    };
+  }, []);
+
+  const stopListening = useCallback(() => {
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch {}
+    }
+    setIsListening(false);
+  }, []);
+
+  const startVoiceSearch = useCallback(() => {
+    if (!isVoiceSupported) {
+      setVoiceStatus('error');
+      setVoiceError('Voice search is not supported in this browser. Please use Chrome or Edge.');
+      setVoiceTooltip('Unsupported browser');
+      setTimeout(() => { setVoiceStatus('idle'); setVoiceError(''); setVoiceTooltip('Click to search by voice'); }, 4000);
+      return;
+    }
+
+    // If already listening, stop
+    if (isListening) {
+      stopListening();
+      setVoiceStatus('idle');
+      setVoiceTooltip('Click to search by voice');
+      return;
+    }
+
+    setVoiceError('');
+    setVoiceStatus('processing');
+    setVoiceTooltip('Requesting microphone access...');
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+      setVoiceStatus('listening');
+      setVoiceTooltip('Listening... Speak now');
+    };
+
+    recognition.onresult = (event) => {
+      let interimTranscript = '';
+      let finalTranscript = '';
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript;
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript;
+        } else {
+          interimTranscript += transcript;
+        }
+      }
+
+      // Show interim results in real-time
+      if (interimTranscript) {
+        setSearchQuery(interimTranscript);
+        setVoiceTooltip('Listening... (adjusting...)');
+      }
+
+      // When final, set the query and search
+      if (finalTranscript) {
+        setSearchQuery(finalTranscript);
+        setVoiceStatus('processing');
+        setVoiceTooltip('Processing...');
+        // Auto-search after short delay
+        setTimeout(() => {
+          navigate(`/find-parking?q=${encodeURIComponent(finalTranscript.trim())}`);
+          setSearchQuery('');
+          setIsListening(false);
+          setVoiceStatus('idle');
+          setVoiceTooltip('Click to search by voice');
+        }, 500);
+      }
+    };
+
+    recognition.onerror = (event) => {
+      setIsListening(false);
+      let errorMsg = '';
+      let tooltip = '';
+
+      switch (event.error) {
+        case 'no-speech':
+          errorMsg = 'No speech detected. Please try again.';
+          tooltip = 'No speech detected';
+          break;
+        case 'audio-capture':
+          errorMsg = 'No microphone found. Please check your device.';
+          tooltip = 'No microphone found';
+          break;
+        case 'not-allowed':
+          errorMsg = 'Microphone permission denied. Please allow access in your browser settings.';
+          tooltip = 'Permission denied';
+          break;
+        case 'network':
+          errorMsg = 'Network error. Please check your connection.';
+          tooltip = 'Network error';
+          break;
+        case 'aborted':
+          errorMsg = '';
+          tooltip = 'Click to search by voice';
+          break;
+        default:
+          errorMsg = 'Voice recognition error. Please try again.';
+          tooltip = 'Recognition error';
+      }
+
+      if (errorMsg) {
+        setVoiceStatus('error');
+        setVoiceError(errorMsg);
+        setVoiceTooltip(tooltip);
+        setTimeout(() => { setVoiceStatus('idle'); setVoiceError(''); setVoiceTooltip('Click to search by voice'); }, 4000);
+      } else {
+        setVoiceStatus('idle');
+        setVoiceTooltip('Click to search by voice');
+      }
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+      if (voiceStatus === 'listening') {
+        setVoiceStatus('idle');
+        setVoiceTooltip('Click to search by voice');
+      }
+    };
+
+    recognitionRef.current = recognition;
+
+    try {
+      recognition.start();
+    } catch (err) {
+      setVoiceStatus('error');
+      setVoiceError('Could not start voice recognition. Please try again.');
+      setVoiceTooltip('Start failed');
+      setTimeout(() => { setVoiceStatus('idle'); setVoiceError(''); setVoiceTooltip('Click to search by voice'); }, 4000);
+    }
+  }, [isVoiceSupported, isListening, stopListening, navigate, voiceStatus]);
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       navigate(`/find-parking?q=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery('');
-      setSearchOpen(false);
-      closeMobile();
     }
   };
 
-  const handleCityChange = (city) => {
-    setFilters({ city: city.value });
-    setCityOpen(false);
+  const getUserInitials = () => {
+    if (user?.firstName && user?.lastName) return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+    if (user?.name) { const p = user.name.split(' '); return p.length >= 2 ? `${p[0][0]}${p[1][0]}`.toUpperCase() : p[0][0].toUpperCase(); }
+    if (user?.email) return user.email[0].toUpperCase();
+    return 'U';
   };
 
-  const selectedCity = cities.find((c) => c.value === filters.city) || cities[0];
+  const getUserDisplayName = () => {
+    if (user?.firstName && user?.lastName) return `${user.firstName} ${user.lastName}`;
+    return user?.name || 'User';
+  };
 
-  const navLinkClass = ({ isActive }) =>
-    `px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-      isActive
-        ? 'text-blue-600 bg-blue-50'
-        : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
-    }`;
+  const isLinkActive = (link) => {
+    if (link.isPlaceholder) return false;
+    if (link.path === '/') return location.pathname === '/';
+    return location.pathname.startsWith(link.path);
+  };
 
-  const mobileNavLinkClass = ({ isActive }) =>
-    `block px-4 py-3 rounded-lg text-base font-medium transition-colors ${
-      isActive
-        ? 'text-blue-600 bg-blue-50'
-        : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
-    }`;
+  const activeLabel = navLinks.find((l) => isLinkActive(l))?.label;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm dark:bg-gray-900 dark:border-b dark:border-gray-700">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center gap-2 text-xl font-bold text-blue-600 dark:text-blue-400" onClick={closeMobile}>
-            <FaParking className="text-2xl" />
-            SpotIQ
-          </Link>
+    <>
+      <motion.nav
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ type: 'spring', stiffness: 260, damping: 30 }}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${
+          scrolled
+            ? 'bg-[#0a0a0b]/90 backdrop-blur-xl border-[#e7c588]/25 shadow-lg shadow-black/30'
+            : 'bg-[#0a0a0b]/40 backdrop-blur-md border-[#e7c588]/25'
+        }`}
+      >
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center h-20 gap-4">
 
-          {/* Desktop navigation links */}
-          <div className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => (
-              <NavLink key={link.path} to={link.path} className={navLinkClass}>
-                {link.label}
-              </NavLink>
-            ))}
-            <a href="/#pricing" className="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors">
-              <FaRupeeSign className="inline mr-1 text-xs" />Pricing
-            </a>
-            <a href="/#how-it-works" className="px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors">
-              <FaQuestionCircle className="inline mr-1 text-xs" />How It Works
-            </a>
-          </div>
-
-          {/* Desktop right section */}
-          <div className="hidden md:flex items-center gap-2">
-            {/* 1. City Selector */}
-            <div className="relative" ref={cityRef}>
-              <button
-                onClick={() => setCityOpen(!cityOpen)}
-                className="flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
+              <motion.div
+                whileHover={{ scale: 1.08 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                className="w-11 h-11 rounded-xl bg-[#0a0a0b] flex items-center justify-center shadow-lg shadow-black/30 ring-1 ring-[#e7c588]/40 group-hover:ring-[#e7c588] group-hover:shadow-[#e7c588]/20 transition-all overflow-hidden"
               >
-                <FaMapMarkerAlt className="text-blue-500" />
-                <span className="max-w-[100px] truncate">{selectedCity.name}</span>
-                <FaCaretDown className={`text-xs transition-transform ${cityOpen ? 'rotate-180' : ''}`} />
-              </button>
-              {cityOpen && (
-                <div className="absolute right-0 mt-2 w-44 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50 animate-fadeIn">
-                  {cities.map((city) => (
-                    <button
-                      key={city.value}
-                      onClick={() => handleCityChange(city)}
-                      className={`w-full text-left px-4 py-2 text-sm transition-colors ${
-                        city.value === filters.city
-                          ? 'text-blue-600 bg-blue-50 font-medium'
-                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                      }`}
-                    >
-                      {city.name}
-                    </button>
-                  ))}
-                </div>
-              )}
+                <img src="/logoSpotIQ.png" alt="SpotIQ" className="w-9 h-9 object-contain" />
+              </motion.div>
+              <span className="text-xl font-extrabold hidden sm:block tracking-tight">
+                <span className="text-[#f9f0d7] dark:text-[#f9f0d7] ">Spot</span>
+                <span className="text-[#bf8a2e] dark:text-[#e7c588]">IQ</span>
+              </span>
+            </Link>
+
+            {/* Nav Links — horizontal scrollable row */}
+            <div
+              ref={navScrollRef}
+              className="hidden md:flex items-center gap-1 ml-4 flex-1 overflow-x-auto scrollbar-none"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+            >
+              {navLinks.map((link) => {
+                const active = isLinkActive(link);
+                return (
+                  <NavLink
+                    key={`${link.path}-${link.label}`}
+                    to={link.path}
+                    className={`relative shrink-0 px-3 py-2 text-[13px] font-medium transition-colors duration-200 whitespace-nowrap ${
+                      active
+                        ? 'text-primary-400'
+                        : 'text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  hover:text-[#f9f0d7] dark:text-[#f9f0d7] '
+                    }`}
+                    onClick={(e) => {
+                      if (link.isPlaceholder) e.preventDefault();
+                    }}
+                  >
+                    <span>{link.label}</span>
+                    {active && (
+                      <motion.div
+                        layoutId="nav-underline"
+                        className="absolute bottom-0 left-2 right-2 h-0.5 bg-primary-400 rounded-full"
+                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                  </NavLink>
+                );
+              })}
             </div>
 
-            {/* 2. Search */}
-            <div className="relative">
-              {searchOpen ? (
-                <form onSubmit={handleSearch} className="flex items-center">
+            {/* Search Bar — lg+ */}
+            <div className="hidden lg:flex flex-1 max-w-sm mx-4">
+              <form onSubmit={handleSearch} className="w-full">
+                <div className="relative flex items-center w-full rounded-full bg-[#121214] dark:bg-[#121214]  border border-[#e7c588]/25 dark:border-[#e7c588]/25  focus-within:ring-2 focus-within:ring-primary-400/30 focus-within:border-primary-400/40 transition-all duration-200">
+                  <FaSearch className="absolute left-4 text-[#e7c588]/80 dark:text-[#e7c588]/80 text-sm pointer-events-none" />
                   <input
-                    ref={searchInputRef}
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search parking..."
-                    className="w-48 px-3 py-1.5 text-sm border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-                    onBlur={() => { if (!searchQuery) setSearchOpen(false); }}
+                    placeholder="Search parking, city, landmark..."
+                    className="w-full pl-11 pr-24 py-2.5 text-sm bg-transparent text-[#f9f0d7] dark:text-[#f9f0d7]  placeholder-gray-500 focus:outline-none rounded-full"
                   />
-                </form>
-              ) : (
-                <button
-                  onClick={() => setSearchOpen(true)}
-                  className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                  aria-label="Search"
-                >
-                  <FaSearch />
-                </button>
-              )}
+                  <div className="absolute right-3 flex items-center gap-1">
+                    <button type="button" onClick={() => navigate('/find-parking')} className="p-1.5 rounded-full text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:bg-[#0a0a0b]:bg-[#0a0a0b]0/10 transition-colors" title="Use location">
+                      <FaMapMarkerAlt className="text-xs" />
+                    </button>
+                    {/* Voice Search Button */}
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={startVoiceSearch}
+                        disabled={!isVoiceSupported && voiceStatus !== 'error'}
+                        className={`p-1.5 rounded-full transition-all duration-200 ${
+                          isListening
+                            ? 'text-[#f9f0d7] bg-[#e7c588] shadow-lg shadow-[#e7c588]/20 animate-pulse'
+                            : voiceStatus === 'error'
+                              ? 'text-[#e7c588] bg-[#e7c588]/10'
+                              : voiceStatus === 'processing'
+                                ? 'text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 bg-[#0a0a0b]/10'
+                                : 'text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:bg-[#0a0a0b]:bg-[#0a0a0b]0/10'
+                        }`}
+                        title={voiceTooltip}
+                      >
+                        {isListening ? (
+                          <FaMicrophoneSlash className="text-xs" />
+                        ) : voiceStatus === 'error' ? (
+                          <FaExclamationTriangle className="text-xs" />
+                        ) : voiceStatus === 'processing' ? (
+                          <div className="w-2.5 h-2.5 border-2 border-primary-400 border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <FaMicrophone className="text-xs" />
+                        )}
+                      </button>
+                      {/* Tooltip */}
+                      <AnimatePresence>
+                        {(voiceTooltip !== 'Click to search by voice' || isListening) && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 4, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 4, scale: 0.95 }}
+                            className="absolute top-full right-0 mt-2 px-3 py-1.5 bg-[#0a0a0b] text-[#f9f0d7] text-[11px] font-medium rounded-lg whitespace-nowrap z-50 pointer-events-none shadow-lg"
+                          >
+                            {voiceTooltip}
+                            <div className="absolute -top-1 right-3 w-2 h-2 bg-[#0a0a0b] rotate-45" />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                </div>
+              </form>
             </div>
 
-            {/* 3. Notification bell with badge */}
-            <button
-              onClick={() => navigate('/notifications')}
-              className="relative p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              aria-label="Notifications"
-            >
-              <FaBell />
-              {notifications.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center bg-red-500 text-white text-[10px] font-bold rounded-full">
-                  {notifications.length > 9 ? '9+' : notifications.length}
-                </span>
+            {/* Right Actions */}
+            <div className="flex items-center gap-2 shrink-0">
+
+              {/* City Selector */}
+              {isAuthenticated && (
+                <div className="relative hidden lg:block" ref={cityRef}>
+                  <button
+                    onClick={() => setCityOpen(!cityOpen)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  bg-[#121214] dark:bg-[#121214]  hover:bg-[#1c1c1f] dark:hover:bg-[#1c1c1f] dark:bg-[#1c1c1f]  transition-colors"
+                  >
+                    <FaMapMarkerAlt className="text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 text-xs" />
+                    <span className="hidden xl:inline">{filters?.city || 'All Cities'}</span>
+                    <FaChevronRight className={`text-[8px] transition-transform ${cityOpen ? 'rotate-90' : ''}`} />
+                  </button>
+                  <AnimatePresence>
+                    {cityOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute right-0 mt-2 w-52 bg-[#0a0a0b] dark:bg-[#0a0a0b]  border border-[#e7c588]/25 dark:border-[#e7c588]/25  rounded-2xl shadow-2xl py-2 z-50"
+                      >
+                        <button
+                          onClick={() => { setFilters({ city: '' }); setCityOpen(false); }}
+                          className={`w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center gap-3 rounded-xl mx-1 ${
+                            !filters?.city ? 'text-primary-400 bg-[#0a0a0b]/10 font-medium' : 'text-[#f3e0ae] dark:text-[#e7c588]/80  hover:bg-[#121214] dark:hover:bg-[#1c1c1f]/50 dark:bg-[#121214] '
+                          }`}
+                          style={{ width: 'calc(100% - 8px)' }}
+                        >
+                          <FaMapMarkerAlt className={`text-xs ${!filters?.city ? 'text-[#e7c588]/80' : 'text-[#e7c588]/80 dark:text-[#e7c588]/80 '}`} />
+                          All Cities
+                        </button>
+                        {cities.map((city) => (
+                          <button
+                            key={city}
+                            onClick={() => { setFilters({ city }); setCityOpen(false); }}
+                            className={`w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center gap-3 rounded-xl mx-1 ${
+                              filters?.city === city
+                                ? 'text-primary-400 bg-[#0a0a0b]/10 font-medium'
+                                : 'text-[#f3e0ae] dark:text-[#e7c588]/80  hover:bg-[#121214] dark:hover:bg-[#1c1c1f]/50 dark:bg-[#121214] '
+                            }`}
+                            style={{ width: 'calc(100% - 8px)' }}
+                          >
+                            <FaMapMarkerAlt className={`text-xs ${filters?.city === city ? 'text-[#e7c588]/80' : 'text-[#e7c588]/80 dark:text-[#e7c588]/80 '}`} />
+                            {city}
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               )}
-            </button>
 
-            {/* 4. Quick Book Now CTA */}
-            {isAuthenticated && (
-              <Link
-                to="/find-parking"
-                className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-orange-500 hover:bg-orange-600 rounded-lg transition-colors shadow-sm"
+              {/* Notifications */}
+              {isAuthenticated && (
+                <div className="relative" ref={notifRef}>
+                  <button
+                    onClick={() => { setNotifOpen(!notifOpen); setProfileOpen(false); }}
+                    className="relative p-2.5 rounded-xl text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  bg-[#121214] dark:bg-[#121214]  hover:bg-[#1c1c1f] dark:hover:bg-[#1c1c1f] dark:bg-[#1c1c1f]  transition-colors"
+                    aria-label="Notifications"
+                  >
+                    <FaBell className="text-sm" />
+                    {unreadCount > 0 && (
+                      <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center bg-[#e7c588] text-[#f9f0d7] text-[10px] font-bold rounded-full">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </motion.span>
+                    )}
+                  </button>
+                  <AnimatePresence>
+                    {notifOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute top-full right-0 mt-2 w-80 bg-[#0a0a0b] dark:bg-[#0a0a0b]  border border-[#e7c588]/25 dark:border-[#e7c588]/25  rounded-2xl shadow-2xl z-50 overflow-hidden"
+                      >
+                        <div className="flex items-center justify-between px-5 py-4 border-b border-[#e7c588]/25 dark:border-[#e7c588]/25/50 ">
+                          <h3 className="text-sm font-semibold text-[#f9f0d7] dark:text-[#f9f0d7] ">Notifications</h3>
+                          <button className="text-xs text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 font-medium transition-colors">Mark all read</button>
+                        </div>
+                        <div className="max-h-96 overflow-y-auto">
+                          {Object.entries(dummyNotifications).map(([group, items]) => (
+                            <div key={group}>
+                              <div className="px-5 py-2 bg-[#0a0a0b] dark:bg-[#121214] ">
+                                <p className="text-[10px] font-bold text-[#e7c588]/80 dark:text-[#e7c588]/80  uppercase tracking-wider">{group.charAt(0).toUpperCase() + group.slice(1)}</p>
+                              </div>
+                              {items.map((notif) => {
+                                const Icon = notif.icon;
+                                return (
+                                  <div key={notif.id} className="flex items-start gap-3 px-5 py-3 hover:bg-[#0a0a0b] dark:hover:bg-[#121214] dark:bg-[#121214]  transition-colors cursor-pointer border-b border-gray-50  last:border-0">
+                                    <div className="w-9 h-9 rounded-xl bg-[#0a0a0b]/10 flex items-center justify-center shrink-0 mt-0.5">
+                                      <Icon className="text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 text-sm" />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                      <p className="text-sm font-medium text-[#f9f0d7] dark:text-[#f9f0d7]  truncate">{notif.title}</p>
+                                      <p className="text-xs text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  truncate mt-0.5">{notif.desc}</p>
+                                    </div>
+                                    <span className="text-[10px] text-[#e7c588]/80 dark:text-[#e7c588]/80  shrink-0 mt-1">{notif.time}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              )}
+
+              {/* Theme Toggle */}
+              <button
+                onClick={toggleTheme}
+                className="p-2.5 rounded-xl text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  bg-[#121214] dark:bg-[#121214]  hover:bg-[#1c1c1f] dark:hover:bg-[#1c1c1f] dark:bg-[#1c1c1f]  transition-colors overflow-hidden"
+                aria-label="Toggle theme"
               >
-                <FaCalendarCheck />
-                Book Now
-              </Link>
-            )}
+                <AnimatePresence mode="wait">
+                  {theme === 'dark' ? (
+                    <motion.div key="sun" initial={{ rotate: -90, scale: 0 }} animate={{ rotate: 0, scale: 1 }} exit={{ rotate: 90, scale: 0 }} transition={{ duration: 0.2 }}>
+                      <FaSun className="text-primary-400 text-sm" />
+                    </motion.div>
+                  ) : (
+                    <motion.div key="moon" initial={{ rotate: 90, scale: 0 }} animate={{ rotate: 0, scale: 1 }} exit={{ rotate: -90, scale: 0 }} transition={{ duration: 0.2 }}>
+                      <FaMoon className="text-sm" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </button>
 
-            {/* 5. Support */}
-            <a
-              href="mailto:support@spotiq.in"
-              className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              aria-label="Support"
-            >
-              <FaHeadset />
-            </a>
-
-            {/* 6. AI Chatbot */}
-            <button
-              onClick={() => setChatbotOpen(!chatbotOpen)}
-              className={`p-2 rounded-lg transition-colors ${chatbotOpen ? 'text-orange-400 bg-orange-500/10' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
-              aria-label="AI Chatbot"
-            >
-              {chatbotOpen ? <FaCommentDots className="text-orange-400" /> : <FaRobot />}
-            </button>
-
-            {/* 7. Theme toggle */}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? <FaSun className="text-yellow-400" /> : <FaMoon />}
-            </button>
-
-            {isAuthenticated ? (
-              <div className="relative" ref={dropdownRef}>
+              {/* Favorites */}
+              {isAuthenticated && (
                 <button
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors"
+                  onClick={() => navigate('/find-parking')}
+                  className="hidden sm:flex p-2.5 rounded-xl text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  bg-[#121214] dark:bg-[#121214]  hover:bg-[#1c1c1f] dark:hover:bg-[#1c1c1f] dark:bg-[#1c1c1f]  hover:text-[#e7c588]  transition-colors"
+                  aria-label="Favorites"
                 >
-                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">
-                    {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                  </div>
-                  <span className="max-w-[120px] truncate">{user?.name || 'User'}</span>
-                  <FaCaretDown className={`text-xs transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+                  <FaHeart className="text-sm" />
                 </button>
+              )}
 
-                {dropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50 animate-fadeIn">
-                    <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
-                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user?.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+              {/* Profile Avatar / Login */}
+              {isAuthenticated ? (
+                <div className="relative" ref={profileRef}>
+                  <button
+                    onClick={() => { setProfileOpen(!profileOpen); setNotifOpen(false); }}
+                    className="flex items-center gap-2 p-1 rounded-full hover:ring-2 hover:ring-primary-400/30 transition-all"
+                  >
+                    {user?.profilePhoto ? (
+                      <img src={user.profilePhoto} alt={getUserDisplayName()} className="w-9 h-9 rounded-full object-cover" />
+                    ) : (
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br bg-primary-500 flex items-center justify-center text-[#f9f0d7] text-xs font-bold shadow-md shadow-primary-400/20">
+                        {getUserInitials()}
+                      </div>
+                    )}
+                  </button>
+                  <AnimatePresence>
+                    {profileOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute top-full right-0 mt-2 w-64 bg-[#0a0a0b] dark:bg-[#0a0a0b]  border border-[#e7c588]/25 dark:border-[#e7c588]/25  rounded-2xl shadow-2xl z-50 overflow-hidden"
+                      >
+                        <div className="px-5 py-4 border-b border-[#e7c588]/25 dark:border-[#e7c588]/25/50 ">
+                          <div className="flex items-center gap-3">
+                            {user?.profilePhoto ? (
+                              <img src={user.profilePhoto} alt={getUserDisplayName()} className="w-10 h-10 rounded-full object-cover" />
+                            ) : (
+                              <div className="w-10 h-10 rounded-full bg-gradient-to-br bg-primary-500 flex items-center justify-center text-[#f9f0d7] text-sm font-bold shadow-md shadow-primary-400/20">
+                                {getUserInitials()}
+                              </div>
+                            )}
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold text-[#f9f0d7] dark:text-[#f9f0d7]  truncate">{getUserDisplayName()}</p>
+                              <p className="text-xs text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  truncate">{user?.email || ''}</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="py-2 px-2">
+                          {profileMenuItems.map((item, idx) => {
+                            const Icon = item.icon;
+                            return (
+                              <React.Fragment key={item.label}>
+                                {idx === 3 && <div className="my-1.5 border-t border-[#e7c588]/25 dark:border-[#e7c588]/25/50 " />}
+                                <Link
+                                  to={item.path}
+                                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#f3e0ae] dark:text-[#e7c588]/80  rounded-xl hover:bg-[#121214] dark:hover:bg-[#1c1c1f]/50 dark:bg-[#121214]  transition-colors"
+                                  onClick={() => setProfileOpen(false)}
+                                >
+                                  <Icon className="text-[#e7c588]/80 dark:text-[#e7c588]/80  text-sm" />
+                                  <span>{item.label}</span>
+                                </Link>
+                              </React.Fragment>
+                            );
+                          })}
+                        </div>
+                        <div className="border-t border-[#e7c588]/25 dark:border-[#e7c588]/25/50  py-2 px-2">
+                          <button
+                            onClick={() => { setProfileOpen(false); logout(); }}
+                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#e7c588] rounded-xl hover:bg-[#e7c588]:bg-[#e7c588]/10 w-full text-left transition-colors"
+                          >
+                            <FaSignOutAlt className="text-sm" />
+                            <span>Logout</span>
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Link to="/login" className="px-4 py-2 text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80  hover:text-primary-400  transition-colors">Login</Link>
+                  <Link to="/register" className="px-4 py-2 text-sm font-semibold text-[#f9f0d7] bg-primary-500 hover:bg-primary-600 rounded-xl transition-all shadow-md shadow-primary-400/20">Sign Up</Link>
+                </div>
+              )}
+
+              {/* Book Now */}
+              {isAuthenticated && location.pathname !== '/find-parking' && (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => navigate('/find-parking')}
+                  className="hidden sm:flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-[#f9f0d7] bg-primary-500 rounded-xl shadow-lg shadow-primary-400/25 hover:shadow-xl hover:shadow-primary-400/30 transition-shadow ml-1"
+                >
+                  Book Now
+                  <FaArrowRight className="text-xs" />
+                </motion.button>
+              )}
+
+              {/* Mobile Hamburger — only below md */}
+              <button
+                onClick={() => setMobileOpen(!mobileOpen)}
+                className="p-2.5 rounded-xl text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  bg-[#121214] dark:bg-[#121214]  hover:bg-[#1c1c1f] dark:hover:bg-[#1c1c1f] dark:bg-[#1c1c1f]  transition-colors md:hidden"
+                aria-label="Toggle menu"
+              >
+                {mobileOpen ? <FaTimes className="text-sm" /> : <FaBars className="text-sm" />}
+              </button>
+            </div>
+          </div>
+        </div>
+      </motion.nav>
+
+      {/* Voice Search Error Toast */}
+      <AnimatePresence>
+        {voiceStatus === 'error' && voiceError && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, y: -20, x: '-50%' }}
+            className="fixed top-24 left-1/2 z-[60] max-w-sm w-full mx-4 px-4 py-3 bg-[#e7c588]/20 border border-[#e7c588]/40 rounded-xl shadow-xl flex items-center gap-3"
+          >
+            <div className="w-8 h-8 rounded-lg bg-[#e7c588]/20 flex items-center justify-center shrink-0">
+              <FaExclamationTriangle className="text-[#e7c588] text-sm" />
+            </div>
+            <p className="text-sm text-[#e7c588] font-medium">{voiceError}</p>
+            <button
+              onClick={() => { setVoiceStatus('idle'); setVoiceError(''); setVoiceTooltip('Click to search by voice'); }}
+              className="ml-auto p-1 rounded-full hover:bg-[#e7c588]:bg-[#e7c588]/20 text-[#e7c588] transition-colors"
+            >
+              <FaTimes className="text-xs" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Mobile Drawer — below md only */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50  z-40 md:hidden"
+              onClick={() => setMobileOpen(false)}
+            />
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              className="fixed top-0 right-0 h-full w-80 bg-[#0a0a0b] dark:bg-[#0a0a0b]  shadow-2xl z-50 flex flex-col md:hidden"
+            >
+              <div className="flex items-center justify-between px-5 h-20 border-b border-[#e7c588]/25 dark:border-[#e7c588]/25  shrink-0">
+                <Link to="/" className="flex items-center gap-2.5" onClick={() => setMobileOpen(false)}>
+                  <div className="w-10 h-10 rounded-xl bg-[#0a0a0b] flex items-center justify-center shadow-lg ring-1 ring-[#e7c588]/40 overflow-hidden">
+                    <img src="/logoSpotIQ.png" alt="SpotIQ" className="w-8 h-8 object-contain" />
+                  </div>
+                  <span className="text-xl font-extrabold">
+                    <span className="text-[#f9f0d7] dark:text-[#f9f0d7] ">Spot</span>
+                    <span className="text-[#bf8a2e] dark:text-[#e7c588]">IQ</span>
+                  </span>
+                </Link>
+                <button onClick={() => setMobileOpen(false)} className="p-2.5 rounded-xl text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  bg-[#121214] dark:bg-[#121214]  hover:bg-[#1c1c1f] dark:hover:bg-[#1c1c1f] dark:bg-[#1c1c1f]  transition-colors">
+                  <FaTimes className="text-sm" />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto">
+                {/* Search */}
+                <div className="px-4 pt-5 pb-3">
+                  <form onSubmit={handleSearch}>
+                    <div className="relative flex items-center rounded-xl bg-[#121214] dark:bg-[#121214]  border border-[#e7c588]/25 dark:border-[#e7c588]/25 ">
+                      <FaSearch className="absolute left-3.5 text-[#e7c588]/80 dark:text-[#e7c588]/80 text-sm" />
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search parking spots..."
+                        className="w-full pl-10 pr-12 py-3 text-sm bg-transparent text-[#f9f0d7] dark:text-[#f9f0d7]  placeholder-gray-500 focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={startVoiceSearch}
+                        className={`absolute right-2 p-1.5 rounded-full transition-all duration-200 ${
+                          isListening
+                            ? 'text-[#f9f0d7] bg-[#e7c588] shadow-lg shadow-[#e7c588]/20 animate-pulse'
+                            : voiceStatus === 'error'
+                              ? 'text-[#e7c588] bg-[#e7c588]/10'
+                              : voiceStatus === 'processing'
+                                ? 'text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 bg-[#0a0a0b]/10'
+                                : 'text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:bg-[#0a0a0b]:bg-[#0a0a0b]0/10'
+                        }`}
+                      >
+                        {isListening ? (
+                          <FaMicrophoneSlash className="text-xs" />
+                        ) : voiceStatus === 'error' ? (
+                          <FaExclamationTriangle className="text-xs" />
+                        ) : voiceStatus === 'processing' ? (
+                          <div className="w-2.5 h-2.5 border-2 border-primary-400 border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <FaMicrophone className="text-xs" />
+                        )}
+                      </button>
                     </div>
-                    <Link to="/profile" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700" onClick={() => setDropdownOpen(false)}>
-                      <FaUser className="text-gray-400" /> Profile
-                    </Link>
-                    <Link to="/my-vehicles" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700" onClick={() => setDropdownOpen(false)}>
-                      <FaCar className="text-gray-400" /> My Vehicles
-                    </Link>
-                    <Link to="/notifications" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700" onClick={() => setDropdownOpen(false)}>
-                      <FaBell className="text-gray-400" /> Notifications
-                    </Link>
-                    <hr className="my-1 border-gray-100 dark:border-gray-700" />
-                    <button
-                      onClick={() => { setDropdownOpen(false); logout(); }}
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 w-full text-left"
+                  </form>
+                </div>
+
+                {/* All nav links */}
+                <div className="px-3 py-2">
+                  <p className="px-3 py-2 text-[10px] font-bold text-[#e7c588]/80 dark:text-[#e7c588]/80  uppercase tracking-widest">Navigation</p>
+                  <div className="space-y-0.5">
+                    {navLinks.map((link, idx) => {
+                      const active = isLinkActive(link);
+                      return (
+                        <motion.div key={`${link.path}-${link.label}`} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.03 * idx }}>
+                          <NavLink
+                            to={link.path}
+                            className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                              active ? 'text-primary-400 bg-[#0a0a0b]/10' : 'text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  hover:text-[#f9f0d7] dark:text-[#f9f0d7]  hover:bg-[#121214] dark:hover:bg-[#1c1c1f]/50 dark:bg-[#121214] '
+                            }`}
+                            onClick={(e) => { if (link.isPlaceholder) e.preventDefault(); setMobileOpen(false); }}
+                          >
+                            <span>{link.label}</span>
+                            <FaChevronRight className="text-[10px] text-[#e7c588]/80" />
+                          </NavLink>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Book Now */}
+                {isAuthenticated && (
+                  <div className="px-4 py-3">
+                    <motion.button
+                      whileTap={{ scale: 0.97 }}
+                      onClick={() => { navigate('/find-parking'); setMobileOpen(false); }}
+                      className="w-full flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold text-[#f9f0d7] bg-primary-500 rounded-xl shadow-lg shadow-primary-400/25"
                     >
-                      <FaSignOutAlt /> Logout
+                      <FaCalendarCheck className="text-sm" />
+                      Book Now
+                    </motion.button>
+                  </div>
+                )}
+
+                {/* Theme */}
+                <div className="px-4 py-2">
+                  <button
+                    onClick={toggleTheme}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  hover:bg-[#121214] dark:hover:bg-[#1c1c1f]/50 dark:bg-[#121214]  transition-colors"
+                  >
+                    {theme === 'dark' ? <FaSun className="text-primary-400 text-sm" /> : <FaMoon className="text-sm" />}
+                    <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Drawer Footer */}
+              <div className="border-t border-[#e7c588]/25 dark:border-[#e7c588]/25  p-4 shrink-0">
+                {isAuthenticated ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3 px-3 py-2.5">
+                      {user?.profilePhoto ? (
+                        <img src={user.profilePhoto} alt={getUserDisplayName()} className="w-10 h-10 rounded-full object-cover" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br bg-primary-500 flex items-center justify-center text-[#f9f0d7] text-sm font-bold shadow-md shadow-primary-400/20">
+                          {getUserInitials()}
+                        </div>
+                      )}
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-[#f9f0d7] dark:text-[#f9f0d7]  truncate">{getUserDisplayName()}</p>
+                        <p className="text-xs text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  truncate">{user?.email || ''}</p>
+                      </div>
+                    </div>
+                    <Link to="/profile" className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#f3e0ae] dark:text-[#e7c588]/80  rounded-xl hover:bg-[#121214] dark:hover:bg-[#1c1c1f]/50 dark:bg-[#121214]  transition-colors" onClick={() => setMobileOpen(false)}>
+                      <FaUser className="text-[#e7c588]/80 dark:text-[#e7c588]/80 text-sm" /> My Profile
+                    </Link>
+                    <button onClick={() => { setMobileOpen(false); logout(); }} className="flex items-center gap-3 px-4 py-2.5 text-sm text-[#e7c588] rounded-xl hover:bg-[#e7c588]:bg-[#e7c588]/10 w-full text-left transition-colors">
+                      <FaSignOutAlt className="text-sm" /> Logout
                     </button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Link to="/login" className="block w-full text-center px-4 py-3 text-sm font-medium text-primary-400 border border-primary-400/30 rounded-xl hover:bg-[#0a0a0b]:bg-[#0a0a0b]0/10 transition-colors" onClick={() => setMobileOpen(false)}>Login</Link>
+                    <Link to="/register" className="block w-full text-center px-4 py-3 text-sm font-semibold text-[#f9f0d7] bg-primary-500 rounded-xl shadow-lg shadow-primary-400/25" onClick={() => setMobileOpen(false)}>Sign Up</Link>
                   </div>
                 )}
               </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link to="/login" className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 transition-colors">
-                  Login
-                </Link>
-                <Link to="/register" className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
-                  Register
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Mobile hamburger */}
-          <div className="flex items-center gap-2 md:hidden">
-            {/* Mobile search toggle */}
-            <button
-              onClick={() => setSearchOpen(!searchOpen)}
-              className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            >
-              <FaSearch />
-            </button>
-            {/* Mobile notification */}
-            <button
-              onClick={() => navigate('/notifications')}
-              className="relative p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            >
-              <FaBell />
-              {notifications.length > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center bg-red-500 text-white text-[9px] font-bold rounded-full">
-                  {notifications.length > 9 ? '9+' : notifications.length}
-                </span>
-              )}
-            </button>
-            <button
-              onClick={() => setChatbotOpen(!chatbotOpen)}
-              className={`p-2 rounded-lg transition-colors ${chatbotOpen ? 'text-orange-400' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
-              aria-label="AI Chatbot"
-            >
-              <FaRobot />
-            </button>
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            >
-              {theme === 'dark' ? <FaSun className="text-yellow-400" /> : <FaMoon />}
-            </button>
-            <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              aria-label="Toggle mobile menu"
-            >
-              {mobileOpen ? <FaTimes className="text-xl" /> : <FaBars className="text-xl" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile search bar */}
-        {searchOpen && (
-          <div className="md:hidden px-2 pb-3">
-            <form onSubmit={handleSearch}>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search parking by name or city..."
-                className="w-full px-4 py-2 text-sm border border-blue-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-white"
-              />
-            </form>
-          </div>
+            </motion.div>
+          </>
         )}
-      </div>
+      </AnimatePresence>
 
-      {/* Mobile drawer overlay */}
-      <div
-        className={`fixed inset-0 bg-black/50 z-40 transition-opacity md:hidden ${
-          mobileOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
-        }`}
-        onClick={closeMobile}
-      />
-
-      {/* Mobile drawer */}
-      <div
-        className={`fixed top-0 left-0 h-full w-72 bg-white dark:bg-gray-900 shadow-xl z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
-          mobileOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-      >
-        <div className="flex items-center justify-between px-4 h-16 border-b border-gray-200 dark:border-gray-700">
-          <Link to="/" className="flex items-center gap-2 text-xl font-bold text-blue-600" onClick={closeMobile}>
-            <FaParking className="text-2xl" />
-            SpotIQ
-          </Link>
-          <button onClick={closeMobile} className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700">
-            <FaTimes className="text-xl" />
-          </button>
-        </div>
-
-        <div className="px-3 py-4 space-y-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 180px)' }}>
-          {navLinks.map((link) => (
-            <NavLink key={link.path} to={link.path} className={mobileNavLinkClass} onClick={closeMobile}>
-              {link.label}
-            </NavLink>
-          ))}
-          <a href="/#pricing" className="flex items-center gap-2 px-4 py-3 rounded-lg text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors" onClick={closeMobile}>
-            <FaRupeeSign className="text-gray-400" /> Pricing
-          </a>
-          <a href="/#how-it-works" className="flex items-center gap-2 px-4 py-3 rounded-lg text-base font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-colors" onClick={closeMobile}>
-            <FaQuestionCircle className="text-gray-400" /> How It Works
-          </a>
-
-          <hr className="my-3 border-gray-200 dark:border-gray-700" />
-
-          {/* Mobile city selector */}
-          <p className="px-4 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">City</p>
-          {cities.map((city) => (
-            <button
-              key={city.value}
-              onClick={() => { handleCityChange(city); closeMobile(); }}
-              className={`w-full text-left flex items-center gap-2 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
-                city.value === filters.city
-                  ? 'text-blue-600 bg-blue-50'
-                  : 'text-gray-600 hover:text-blue-600 hover:bg-blue-50'
-              }`}
-            >
-              <FaMapMarkerAlt className={city.value === filters.city ? 'text-blue-600' : 'text-gray-400'} />
-              {city.name}
-            </button>
-          ))}
-
-          {/* Mobile quick links */}
-          {isAuthenticated && (
-            <>
-              <hr className="my-3 border-gray-200 dark:border-gray-700" />
-              <Link
-                to="/find-parking"
-                className="flex items-center justify-center gap-2 px-4 py-3 text-base font-semibold text-white bg-orange-500 hover:bg-orange-600 rounded-lg transition-colors"
-                onClick={closeMobile}
-              >
-                <FaCalendarCheck /> Book Now
-              </Link>
-            </>
-          )}
-        </div>
-
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <a href="mailto:support@spotiq.in" className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-gray-500 hover:text-blue-600 transition-colors">
-              <FaHeadset /> Support
-            </a>
-          </div>
-          {isAuthenticated ? (
-            <div className="space-y-2">
-              <div className="flex items-center gap-3 px-2 py-2">
-                <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">
-                  {user?.name?.charAt(0)?.toUpperCase() || 'U'}
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">{user?.name}</p>
-                  <p className="text-xs text-gray-500">{user?.email}</p>
-                </div>
-              </div>
-              <Link to="/profile" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 rounded-lg" onClick={closeMobile}>
-                <FaCog className="text-gray-400" /> Profile
-              </Link>
-              <Link to="/my-vehicles" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-100 rounded-lg" onClick={closeMobile}>
-                <FaCar className="text-gray-400" /> My Vehicles
-              </Link>
-              <button
-                onClick={() => { closeMobile(); logout(); }}
-                className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 rounded-lg w-full text-left"
-              >
-                <FaSignOutAlt /> Logout
-              </button>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <Link to="/login" className="block w-full text-center px-4 py-2.5 text-sm font-medium text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50" onClick={closeMobile}>
-                Login
-              </Link>
-              <Link to="/register" className="block w-full text-center px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700" onClick={closeMobile}>
-                Register
-              </Link>
-            </div>
-          )}
-        </div>
-      </div>
-      {/* AI Chatbot */}
-      <ChatBot isOpen={chatbotOpen} onClose={() => setChatbotOpen(false)} />
-    </nav>
+    </>
   );
 };
 

@@ -16,8 +16,8 @@ const amenityConfig = [
 
 const ParkingAmenities = ({ amenities = [] }) => {
   return (
-    <div className="bg-white rounded-xl shadow-md p-6">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">Amenities</h3>
+    <div className="bg-[#0a0a0b] dark:bg-[#0a0a0b] rounded-xl shadow-md p-6">
+      <h3 className="text-lg font-semibold text-[#f9f0d7] mb-4">Amenities</h3>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {amenityConfig.map(({ key, label, icon: Icon }) => {
           const available = amenities.includes(key);
@@ -27,11 +27,11 @@ const ParkingAmenities = ({ amenities = [] }) => {
               className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition ${
                 available
                   ? 'border-primary-200 bg-primary-50 text-primary-600'
-                  : 'border-gray-100 bg-gray-50 text-gray-300'
+                  : 'border-[#e7c588]/25 dark:border-[#e7c588]/25/50 bg-[#0a0a0b] dark:bg-[#121214] text-[#e7c588]/80'
               }`}
             >
-              <Icon className={`text-2xl ${available ? 'text-primary-600' : 'text-gray-300'}`} />
-              <span className={`text-xs font-medium text-center ${available ? 'text-primary-700' : 'text-gray-400'}`}>
+              <Icon className={`text-2xl ${available ? 'text-primary-600' : 'text-[#e7c588]/80'}`} />
+              <span className={`text-xs font-medium text-center ${available ? 'text-primary-700' : 'text-[#e7c588]/80'}`}>
                 {label}
               </span>
             </div>

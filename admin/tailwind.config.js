@@ -5,9 +5,18 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a' },
-        secondary: { 50: '#fff7ed', 100: '#ffedd5', 200: '#fed7aa', 300: '#fdba74', 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c', 800: '#9a3412', 900: '#7c2d12' },
-        sidebar: { DEFAULT: '#111827', hover: '#1f2937', active: '#374151' },
+        primary: {
+          50: '#f0f4fd',
+          100: '#dde5fa',
+          200: '#bccbf5',
+          300: '#93addf',
+          400: '#7993df',
+          500: '#5f7ad0',
+          600: '#4a63b8',
+          700: '#3d519a',
+          800: '#34447d',
+          900: '#2d3a67',
+        },
       },
       fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
     },

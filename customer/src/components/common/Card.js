@@ -9,7 +9,7 @@ const Card = ({ children, className = '', hover = false, onClick }) => {
 
   return (
     <div
-      className={`bg-white dark:bg-gray-800 rounded-xl shadow-md ${hoverStyles} ${className}`}
+      className={`bg-[#0a0a0b] dark:bg-[#0a0a0b] rounded-xl shadow-md ${hoverStyles} ${className}`}
       onClick={onClick ? clickHandler : undefined}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}

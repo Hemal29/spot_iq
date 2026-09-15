@@ -12,15 +12,15 @@ const SlotSelector = ({ slots = [], onSelect, selectedSlot }) => {
   };
 
   const getSlotStyle = (slot) => {
-    if (selected?._id === slot._id) return 'bg-primary-600 text-white border-primary-600';
-    if (slot.status === 'booked') return 'bg-gray-200 text-gray-400 border-gray-200 cursor-not-allowed line-through';
-    if (slot.status === 'reserved') return 'bg-red-100 text-red-500 border-red-200 cursor-not-allowed';
-    return 'bg-green-50 text-green-700 border-green-300 hover:bg-green-100 cursor-pointer';
+    if (selected?._id === slot._id) return 'bg-primary-600 text-[#f9f0d7] border-primary-600';
+    if (slot.status === 'booked') return 'bg-[#1c1c1f] dark:bg-[#1c1c1f] text-[#e7c588]/80 dark:text-[#e7c588]/80 border-[#e7c588]/25 dark:border-[#e7c588]/25 cursor-not-allowed line-through';
+    if (slot.status === 'reserved') return 'bg-[#e7c588] text-[#e7c588] border-[#e7c588]/40 cursor-not-allowed';
+    return 'bg-[#0a0a0b] dark:bg-[#121214] text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 border-[#e7c588]/25 hover:bg-[#121214] dark:hover:bg-[#1c1c1f]/50 dark:bg-[#121214] cursor-pointer';
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">Select Slot</h3>
+    <div className="bg-[#0a0a0b] dark:bg-[#0a0a0b] rounded-xl shadow-md p-6">
+      <h3 className="text-lg font-semibold text-[#f9f0d7] mb-4">Select Slot</h3>
 
       <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-3">
         {slots.length > 0 ? (
@@ -35,28 +35,28 @@ const SlotSelector = ({ slots = [], onSelect, selectedSlot }) => {
             </button>
           ))
         ) : (
-          <div className="col-span-full text-center py-8 text-gray-400 text-sm">
+          <div className="col-span-full text-center py-8 text-[#e7c588]/80 dark:text-[#e7c588]/80 text-sm">
             No slots available for the selected date and time
           </div>
         )}
       </div>
 
-      <div className="flex flex-wrap items-center gap-4 mt-6 pt-4 border-t border-gray-100">
+      <div className="flex flex-wrap items-center gap-4 mt-6 pt-4 border-t border-[#e7c588]/25">
         <div className="flex items-center gap-1.5">
-          <FaSquare className="text-green-400" />
-          <span className="text-xs text-gray-500">Available</span>
+          <FaSquare className="text-primary-400" />
+          <span className="text-xs text-[#e7c588]/80">Available</span>
         </div>
         <div className="flex items-center gap-1.5">
           <FaSquare className="text-primary-600" />
-          <span className="text-xs text-gray-500">Selected</span>
+          <span className="text-xs text-[#e7c588]/80">Selected</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <FaSquare className="text-red-300" />
-          <span className="text-xs text-gray-500">Booked</span>
+          <FaSquare className="text-[#e7c588]" />
+          <span className="text-xs text-[#e7c588]/80">Booked</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <FaSquare className="text-gray-200" />
-          <span className="text-xs text-gray-500">Unavailable</span>
+          <FaSquare className="text-[#f3e0ae]" />
+          <span className="text-xs text-[#e7c588]/80">Unavailable</span>
         </div>
       </div>
     </div>

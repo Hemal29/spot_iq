@@ -39,7 +39,7 @@ function formatCurrency(v) {
 function EmptyChart({ message }) {
   return (
     <div className="flex items-center justify-center h-full">
-      <p className="text-gray-400 dark:text-gray-600 text-sm">{message || 'No data available'}</p>
+      <p className="text-gray-400 dark:text-gray-500 text-sm">{message || 'No data available'}</p>
     </div>
   );
 }
@@ -205,7 +205,7 @@ export default function ParkingAnalyticsPage() {
       change: statsData?.revenueChange || '+15.3%',
       trend: statsData?.revenueTrend || 'up',
       icon: FaDollarSign,
-      gradient: 'from-blue-500 to-blue-600',
+      gradient: 'bg-primary-600',
     },
     {
       label: 'Total Bookings',
@@ -213,7 +213,7 @@ export default function ParkingAnalyticsPage() {
       change: statsData?.bookingChange || '+8.7%',
       trend: statsData?.bookingTrend || 'up',
       icon: FaCalendarAlt,
-      gradient: 'from-green-500 to-green-600',
+      gradient: 'bg-primary-400',
     },
     {
       label: 'Occupancy Rate',
@@ -221,7 +221,7 @@ export default function ParkingAnalyticsPage() {
       change: statsData?.occupancyChange || '+5.2%',
       trend: statsData?.occupancyTrend || 'up',
       icon: FaChartBar,
-      gradient: 'from-orange-500 to-orange-600',
+      gradient: 'bg-primary-600',
     },
     {
       label: 'Avg Rating',
@@ -240,7 +240,7 @@ export default function ParkingAnalyticsPage() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-6 bg-gray-50 dark:bg-[#0F172A] min-h-screen"
+      className="space-y-6 bg-gray-50 dark:bg-gray-800  min-h-screen"
     >
       <PageHeader
         title="Parking Analytics"
@@ -250,14 +250,14 @@ export default function ParkingAnalyticsPage() {
             <button
               onClick={handleRefresh}
               disabled={refreshing}
-              className="px-4 py-2.5 bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-white/10 transition flex items-center gap-2 shadow-sm"
+              className="px-4 py-2.5 bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-700  text-gray-700 dark:text-gray-300  text-sm font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800  transition flex items-center gap-2 shadow-sm"
             >
               <FaSyncAlt className={`text-xs ${refreshing ? 'animate-spin' : ''}`} />
               Refresh
             </button>
             <button
               onClick={handleDownload}
-              className="px-4 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white text-sm font-medium rounded-xl transition flex items-center gap-2 shadow-md"
+              className="px-4 py-2.5 bg-primary-500 hover:bg-primary-600 text-white text-sm font-medium rounded-xl transition flex items-center gap-2 shadow-md"
             >
               <FaDownload />
               Download Report
@@ -272,25 +272,25 @@ export default function ParkingAnalyticsPage() {
           return (
             <div
               key={stat.label}
-              className="relative overflow-hidden bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl p-5 border border-gray-200 dark:border-white/10 shadow-sm hover:shadow-md transition-shadow"
+              className="relative overflow-hidden bg-white dark:bg-gray-900   rounded-2xl p-5 border border-gray-200 dark:border-gray-700  shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="absolute top-0 right-0 w-32 h-32 translate-x-10 -translate-y-10 bg-gradient-to-br from-white/5 to-white/0 rounded-full pointer-events-none" />
               <div className="relative z-10 flex items-center justify-between">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{stat.label}</p>
-                  <p className="text-2xl font-bold mt-1 text-gray-900 dark:text-white">{stat.value}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500  truncate">{stat.label}</p>
+                  <p className="text-2xl font-bold mt-1 text-gray-900 dark:text-gray-100 ">{stat.value}</p>
                   <p className="text-xs mt-1.5 flex items-center gap-1">
                     {stat.trend === 'up' ? (
-                      <FaArrowUp className="text-green-500 text-[10px]" />
+                      <FaArrowUp className="text-primary-400 text-[10px]" />
                     ) : stat.trend === 'down' ? (
                       <FaArrowDown className="text-red-500 text-[10px]" />
                     ) : (
-                      <FaMinus className="text-gray-400 text-[10px]" />
+                      <FaMinus className="text-gray-400 dark:text-gray-500 text-[10px]" />
                     )}
-                    <span className={stat.trend === 'up' ? 'text-green-500 font-medium' : stat.trend === 'down' ? 'text-red-500 font-medium' : 'text-gray-400'}>
+                    <span className={stat.trend === 'up' ? 'text-primary-400 font-medium' : stat.trend === 'down' ? 'text-red-500 font-medium' : 'text-gray-400'}>
                       {stat.change}
                     </span>
-                    <span className="text-gray-400 ml-0.5">vs last month</span>
+                    <span className="text-gray-400 dark:text-gray-500 ml-0.5">vs last month</span>
                   </p>
                 </div>
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br ${stat.gradient} shadow-lg shrink-0 ml-3`}>
@@ -303,10 +303,10 @@ export default function ParkingAnalyticsPage() {
       </motion.div>
 
       <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-gray-200 dark:border-white/10 shadow-sm">
+        <div className="bg-white dark:bg-gray-900   rounded-2xl p-6 border border-gray-200 dark:border-gray-700  shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Revenue Overview</h3>
-            <FaChartLine className="text-orange-500 text-lg" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 ">Revenue Overview</h3>
+            <FaChartLine className="text-gray-500 dark:text-gray-400 dark:text-gray-500 text-lg" />
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
@@ -327,10 +327,10 @@ export default function ParkingAnalyticsPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-gray-200 dark:border-white/10 shadow-sm">
+        <div className="bg-white dark:bg-gray-900   rounded-2xl p-6 border border-gray-200 dark:border-gray-700  shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Occupancy Rate</h3>
-            <FaChartBar className="text-orange-500 text-lg" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 ">Occupancy Rate</h3>
+            <FaChartBar className="text-gray-500 dark:text-gray-400 dark:text-gray-500 text-lg" />
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
@@ -352,10 +352,10 @@ export default function ParkingAnalyticsPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-gray-200 dark:border-white/10 shadow-sm">
+        <div className="bg-white dark:bg-gray-900   rounded-2xl p-6 border border-gray-200 dark:border-gray-700  shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Booking Trends</h3>
-            <FaChartLine className="text-orange-500 text-lg" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 ">Booking Trends</h3>
+            <FaChartLine className="text-gray-500 dark:text-gray-400 dark:text-gray-500 text-lg" />
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
@@ -377,10 +377,10 @@ export default function ParkingAnalyticsPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-gray-200 dark:border-white/10 shadow-sm">
+        <div className="bg-white dark:bg-gray-900   rounded-2xl p-6 border border-gray-200 dark:border-gray-700  shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Peak Hours</h3>
-            <FaClock className="text-orange-500 text-lg" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 ">Peak Hours</h3>
+            <FaClock className="text-gray-500 dark:text-gray-400 dark:text-gray-500 text-lg" />
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
@@ -402,10 +402,10 @@ export default function ParkingAnalyticsPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-gray-200 dark:border-white/10 shadow-sm">
+        <div className="bg-white dark:bg-gray-900   rounded-2xl p-6 border border-gray-200 dark:border-gray-700  shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Vehicle Distribution</h3>
-            <FaChartPie className="text-orange-500 text-lg" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 ">Vehicle Distribution</h3>
+            <FaChartPie className="text-gray-500 dark:text-gray-400 dark:text-gray-500 text-lg" />
           </div>
           <div className="h-72 flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
@@ -437,10 +437,10 @@ export default function ParkingAnalyticsPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-gray-200 dark:border-white/10 shadow-sm">
+        <div className="bg-white dark:bg-gray-900   rounded-2xl p-6 border border-gray-200 dark:border-gray-700  shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Top Performing Parkings</h3>
-            <FaCrown className="text-orange-500 text-lg" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 ">Top Performing Parkings</h3>
+            <FaCrown className="text-gray-500 dark:text-gray-400 dark:text-gray-500 text-lg" />
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
@@ -466,10 +466,10 @@ export default function ParkingAnalyticsPage() {
       </motion.div>
 
       <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-gray-200 dark:border-white/10 shadow-sm">
+        <div className="bg-white dark:bg-gray-900   rounded-2xl p-6 border border-gray-200 dark:border-gray-700  shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Monthly Revenue</h3>
-            <FaDollarSign className="text-green-500 text-lg" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 ">Monthly Revenue</h3>
+            <FaDollarSign className="text-primary-400 text-lg" />
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
@@ -484,10 +484,10 @@ export default function ParkingAnalyticsPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-gray-200 dark:border-white/10 shadow-sm">
+        <div className="bg-white dark:bg-gray-900   rounded-2xl p-6 border border-gray-200 dark:border-gray-700  shadow-sm">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Daily Visitors</h3>
-            <FaUsers className="text-blue-500 text-lg" />
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 ">Daily Visitors</h3>
+            <FaUsers className="text-gray-500 dark:text-gray-400 dark:text-gray-500 text-lg" />
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
@@ -510,41 +510,41 @@ export default function ParkingAnalyticsPage() {
       </motion.div>
 
       <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl p-5 border border-gray-200 dark:border-white/10 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-gray-900   rounded-2xl p-5 border border-gray-200 dark:border-gray-700  shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-md">
               <FaClock className="text-white text-sm" />
             </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Average Stay Time</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500  font-medium">Average Stay Time</p>
           </div>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white">2.5 <span className="text-base font-normal text-gray-400">hrs</span></p>
-          <div className="mt-2 flex items-center gap-1 text-xs text-green-500">
+          <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 ">2.5 <span className="text-base font-normal text-gray-400">hrs</span></p>
+          <div className="mt-2 flex items-center gap-1 text-xs text-primary-400">
             <FaArrowUp className="text-[10px]" />
             <span>12.5% vs last month</span>
           </div>
         </div>
-        <div className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl p-5 border border-gray-200 dark:border-white/10 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-gray-900   rounded-2xl p-5 border border-gray-200 dark:border-gray-700  shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow-md">
               <FaTimes className="text-white text-sm" />
             </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Cancellation Rate</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500  font-medium">Cancellation Rate</p>
           </div>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white">12.3<span className="text-base font-normal text-gray-400">%</span></p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 ">12.3<span className="text-base font-normal text-gray-400">%</span></p>
           <div className="mt-2 flex items-center gap-1 text-xs text-red-500">
             <FaArrowDown className="text-[10px]" />
             <span>2.1% vs last month</span>
           </div>
         </div>
-        <div className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl p-5 border border-gray-200 dark:border-white/10 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-white dark:bg-gray-900   rounded-2xl p-5 border border-gray-200 dark:border-gray-700  shadow-sm hover:shadow-md transition-shadow">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-md">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br bg-primary-600 flex items-center justify-center shadow-md">
               <FaUsers className="text-white text-sm" />
             </div>
-            <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Monthly Visitors</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500  font-medium">Monthly Visitors</p>
           </div>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white">1,234</p>
-          <div className="mt-2 flex items-center gap-1 text-xs text-green-500">
+          <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 ">1,234</p>
+          <div className="mt-2 flex items-center gap-1 text-xs text-primary-400">
             <FaArrowUp className="text-[10px]" />
             <span>8.3% vs last month</span>
           </div>

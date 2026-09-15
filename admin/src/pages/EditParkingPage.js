@@ -1,337 +1,649 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import PageHeader from '../components/common/PageHeader';
-import FormField from '../components/common/FormField';
-import ImageUpload from '../components/common/ImageUpload';
-import Button from '../components/common/Button';
-import LoadingSpinner from '../components/common/LoadingSpinner';
+import { motion } from 'framer-motion';
+import {
+  FaSave,
+  FaTimes,
+  FaMapMarkerAlt,
+  FaUser,
+  FaDollarSign,
+  FaTh,
+  FaClock,
+  FaCompass,
+  FaTag,
+  FaCheckSquare,
+  FaExclamationCircle,
+} from 'react-icons/fa';
+import { toast } from 'react-toastify';
 import adminService from '../services/adminService';
+import PageHeader from '../components/common/PageHeader';
 
-const amenitiesList = [
-  { key: 'evCharging', label: 'EV Charging' },
-  { key: 'covered', label: 'Covered' },
-  { key: 'security', label: 'Security' },
-  { key: 'cctv', label: 'CCTV' },
-  { key: 'wheelchair', label: 'Wheelchair Access' },
-  { key: 'carWash', label: 'Car Wash' },
-  { key: 'valet', label: 'Valet Parking' },
+const parkingTypes = [
+  { value: 'mall', label: 'Mall' },
+  { value: 'street', label: 'Street' },
+  { value: 'multi-level', label: 'Multi-Level' },
+  { value: 'airport', label: 'Airport' },
+  { value: 'hospital', label: 'Hospital' },
+  { value: 'residential', label: 'Residential' },
+  { value: 'commercial', label: 'Commercial' },
 ];
 
-export default function EditParkingPage() {
+const statusOptions = [
+  { value: 'active', label: 'Active' },
+  { value: 'closed', label: 'Closed' },
+  { value: 'maintenance', label: 'Maintenance' },
+];
+
+const amenityOptions = [
+  { value: 'cctv', label: 'CCTV' },
+  { value: 'security', label: 'Security' },
+  { value: 'covered', label: 'Covered' },
+  { value: 'open_air', label: 'Open Air' },
+  { value: 'wheelchair_access', label: 'Wheelchair Access' },
+  { value: 'ev_charging', label: 'EV Charging' },
+  { value: 'car_wash', label: 'Car Wash' },
+  { value: 'valet', label: 'Valet' },
+];
+
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center min-h-[60vh]">
+    <motion.div
+      animate={{ rotate: 360 }}
+      transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+      className="w-12 h-12 border-4 border-primary-400 border-t-transparent rounded-full"
+    />
+  </div>
+);
+
+const FormSection = ({ title, icon, children }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="glass-card rounded-xl p-6 "
+  >
+    <h3 className="text-lg font-semibold text-gray-800  mb-4 flex items-center gap-2">
+      {icon}
+      {title}
+    </h3>
+    {children}
+  </motion.div>
+);
+
+const EditParkingPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [form, setForm] = useState(null);
-  const [image, setImage] = useState(null);
-  const [existingImage, setExistingImage] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState(null);
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchParking();
-  }, [id]);
+    const fetchParking = async () => {
+      try {
+        const data = await adminService.getParking(id);
+        setFormData({
+          parkingName: data.parkingName || '',
+          address: data.address || '',
+          city: data.city || '',
+          state: data.state || '',
+          zipCode: data.zipCode || '',
+          country: data.country || '',
+          area: data.area || '',
+          description: data.description || '',
+          ownerName: data.ownerName || data.owner?.name || '',
+          ownerEmail: data.ownerEmail || data.owner?.email || '',
+          ownerPhone: data.ownerPhone || data.owner?.phone || '',
+          pricePerHour: data.pricePerHour || '',
+          dailyPrice: data.dailyPrice || '',
+          weeklyPrice: data.weeklyPrice || '',
+          monthlyPrice: data.monthlyPrice || '',
+          nightCharges: data.nightCharges || '',
+          weekendCharges: data.weekendCharges || '',
+          peakHourCharges: data.peakHourCharges || '',
+          totalSlots: data.totalSlots || '',
+          carSlots: data.carSlots || '',
+          bikeSlots: data.bikeSlots || '',
+          evSlots: data.evSlots || '',
+          vipSlots: data.vipSlots || '',
+          disabledSlots: data.disabledSlots || '',
+          openingTime: data.openingTime || '06:00',
+          closingTime: data.closingTime || '23:00',
+          is24x7: data.is24x7 || false,
+          latitude: data.latitude || '',
+          longitude: data.longitude || '',
+          parkingType: data.parkingType || 'commercial',
+          status: data.status || 'active',
+          amenities: data.amenities || [],
+        });
+      } catch (error) {
+        toast.error('Failed to load parking data');
+        console.error(error);
+        navigate('/parking');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const fetchParking = async () => {
-    try {
-      const res = await adminService.getParking(id);
-      const p = res.data;
-      setForm({
-        parkingName: p.parkingName || '',
-        address: p.address || '',
-        city: p.city || '',
-        state: p.state || '',
-        zipCode: p.zipCode || '',
-        latitude: p.latitude || '',
-        longitude: p.longitude || '',
-        pricePerHour: p.pricePerHour || '',
-        totalSlots: p.totalSlots || '',
-        description: p.description || '',
-        openTime: p.openTime || '08:00',
-        closeTime: p.closeTime || '22:00',
-        amenities: {
-          evCharging: p.amenities?.evCharging || false,
-          covered: p.amenities?.covered || false,
-          security: p.amenities?.security || false,
-          cctv: p.amenities?.cctv || false,
-          wheelchair: p.amenities?.wheelchair || false,
-          carWash: p.amenities?.carWash || false,
-          valet: p.amenities?.valet || false,
-        },
-      });
-      if (p.image) setExistingImage(p.image);
-    } catch (err) {
-      console.error('Failed to load parking:', err);
-      navigate('/parking');
-    } finally {
-      setLoading(false);
+    fetchParking();
+  }, [id, navigate]);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }));
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
-  };
-
-  const handleAmenity = (key) => {
-    setForm((prev) => ({
+  const handleAmenityToggle = (amenity) => {
+    setFormData((prev) => ({
       ...prev,
-      amenities: { ...prev.amenities, [key]: !prev.amenities[key] },
+      amenities: prev.amenities.includes(amenity)
+        ? prev.amenities.filter((a) => a !== amenity)
+        : [...prev.amenities, amenity],
     }));
   };
 
   const validate = () => {
-    const errs = {};
-    if (!form.parkingName.trim()) errs.parkingName = 'Parking name is required';
-    if (!form.address.trim()) errs.address = 'Address is required';
-    if (!form.city.trim()) errs.city = 'City is required';
-    if (!form.state.trim()) errs.state = 'State is required';
-    if (!form.zipCode.trim()) errs.zipCode = 'Zip code is required';
-    if (!form.pricePerHour || Number(form.pricePerHour) <= 0) errs.pricePerHour = 'Valid price per hour is required';
-    if (!form.totalSlots || Number(form.totalSlots) <= 0) errs.totalSlots = 'Valid slot count is required';
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
+    const newErrors = {};
+
+    if (!formData.parkingName.trim())
+      newErrors.parkingName = 'Parking name is required';
+    if (!formData.address.trim()) newErrors.address = 'Address is required';
+    if (!formData.city.trim()) newErrors.city = 'City is required';
+    if (!formData.ownerName.trim())
+      newErrors.ownerName = 'Owner name is required';
+    if (!formData.ownerEmail.trim()) {
+      newErrors.ownerEmail = 'Owner email is required';
+    } else if (!/\S+@\S+\.\S+/.test(formData.ownerEmail)) {
+      newErrors.ownerEmail = 'Invalid email format';
+    }
+    if (!formData.totalSlots) {
+      newErrors.totalSlots = 'Total slots is required';
+    } else if (Number(formData.totalSlots) <= 0) {
+      newErrors.totalSlots = 'Must be greater than 0';
+    }
+    if (!formData.pricePerHour) {
+      newErrors.pricePerHour = 'Price per hour is required';
+    } else if (Number(formData.pricePerHour) < 0) {
+      newErrors.pricePerHour = 'Must be a positive number';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
-    setSaving(true);
+    if (!validate()) {
+      toast.error('Please fix the errors in the form');
+      return;
+    }
+
+    setSubmitting(true);
     try {
       const payload = {
-        ...form,
-        latitude: Number(form.latitude) || undefined,
-        longitude: Number(form.longitude) || undefined,
-        pricePerHour: Number(form.pricePerHour),
-        totalSlots: Number(form.totalSlots),
+        ...formData,
+        pricePerHour: Number(formData.pricePerHour) || 0,
+        dailyPrice: Number(formData.dailyPrice) || 0,
+        weeklyPrice: Number(formData.weeklyPrice) || 0,
+        monthlyPrice: Number(formData.monthlyPrice) || 0,
+        nightCharges: Number(formData.nightCharges) || 0,
+        weekendCharges: Number(formData.weekendCharges) || 0,
+        peakHourCharges: Number(formData.peakHourCharges) || 0,
+        totalSlots: Number(formData.totalSlots) || 0,
+        carSlots: Number(formData.carSlots) || 0,
+        bikeSlots: Number(formData.bikeSlots) || 0,
+        evSlots: Number(formData.evSlots) || 0,
+        vipSlots: Number(formData.vipSlots) || 0,
+        disabledSlots: Number(formData.disabledSlots) || 0,
+        latitude: Number(formData.latitude) || 0,
+        longitude: Number(formData.longitude) || 0,
       };
-      const formData = new FormData();
-      Object.entries(payload).forEach(([key, val]) => {
-        if (key === 'amenities') {
-          formData.append(key, JSON.stringify(val));
-        } else {
-          formData.append(key, val);
-        }
-      });
-      if (image) {
-        formData.append('image', image);
-      } else if (existingImage && !image) {
-        formData.append('keepImage', 'true');
-      }
-      await adminService.updateParking(id, formData);
+
+      await adminService.updateParking(id, payload);
+      toast.success('Parking location updated successfully!');
       navigate('/parking');
-    } catch (err) {
-      console.error('Failed to update parking:', err);
-      setErrors({ submit: err.response?.data?.message || 'Failed to update parking' });
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Failed to update parking location');
+      console.error(error);
     } finally {
-      setSaving(false);
+      setSubmitting(false);
     }
   };
 
-  if (loading) return <LoadingSpinner />;
+  const InputField = ({ label, name, type = 'text', required, placeholder }) => (
+    <div className="col-span-1">
+      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300  mb-1.5">
+        {label} {required && <span className="text-red-500">*</span>}
+      </label>
+      <input
+        type={type}
+        name={name}
+        value={formData[name]}
+        onChange={handleChange}
+        placeholder={placeholder || label}
+        className={`input-field w-full px-4 py-2.5 rounded-lg ${
+          errors[name] ? 'border-red-500 focus:ring-red-500' : ''
+        }`}
+      />
+      {errors[name] && (
+        <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
+          <FaExclamationCircle size={12} /> {errors[name]}
+        </p>
+      )}
+    </div>
+  );
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="Edit Parking Location"
+          breadcrumbs={[
+            { label: 'Dashboard', path: '/dashboard' },
+            { label: 'Parking Management', path: '/parking' },
+            { label: 'Edit' },
+          ]}
+        />
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (!formData) return null;
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="space-y-6">
       <PageHeader
         title="Edit Parking Location"
-        subtitle="Update parking facility details"
+        breadcrumbs={[
+          { label: 'Dashboard', path: '/dashboard' },
+          { label: 'Parking Management', path: '/parking' },
+          { label: formData.parkingName || 'Edit' },
+        ]}
       />
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800">Basic Information</h3>
+        {/* Basic Info */}
+        <FormSection
+          title="Basic Information"
+          icon={<FaMapMarkerAlt className="text-gray-500 dark:text-gray-400" />}
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField label="Parking Name" error={errors.parkingName} required>
-              <input
-                name="parkingName"
-                value={form.parkingName}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              />
-            </FormField>
-            <FormField label="City" error={errors.city} required>
-              <input
-                name="city"
-                value={form.city}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              />
-            </FormField>
-            <FormField label="State" error={errors.state} required>
-              <input
-                name="state"
-                value={form.state}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              />
-            </FormField>
-            <FormField label="Zip Code" error={errors.zipCode} required>
-              <input
-                name="zipCode"
-                value={form.zipCode}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              />
-            </FormField>
-            <FormField label="Latitude">
-              <input
-                name="latitude"
-                type="number"
-                step="any"
-                value={form.latitude}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              />
-            </FormField>
-            <FormField label="Longitude">
-              <input
-                name="longitude"
-                type="number"
-                step="any"
-                value={form.longitude}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              />
-            </FormField>
-          </div>
-          <FormField label="Address" error={errors.address} required>
-            <textarea
-              name="address"
-              value={form.address}
-              onChange={handleChange}
-              rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
+            <InputField
+              label="Parking Name"
+              name="parkingName"
+              required
+              placeholder="e.g., Central City Parking"
             />
-          </FormField>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800">Pricing & Capacity</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField label="Price Per Hour (₹)" error={errors.pricePerHour} required>
-              <input
-                name="pricePerHour"
-                type="number"
-                min="0"
-                step="0.01"
-                value={form.pricePerHour}
+            <InputField
+              label="Address"
+              name="address"
+              required
+              placeholder="123 Main Street"
+            />
+            <InputField
+              label="City"
+              name="city"
+              required
+              placeholder="New York"
+            />
+            <InputField label="State" name="state" placeholder="NY" />
+            <InputField label="Zip Code" name="zipCode" placeholder="10001" />
+            <InputField
+              label="Country"
+              name="country"
+              placeholder="United States"
+            />
+            <InputField label="Area" name="area" placeholder="Downtown" />
+            <div className="col-span-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300  mb-1.5">
+                Description
+              </label>
+              <textarea
+                name="description"
+                value={formData.description}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                rows={3}
+                placeholder="Describe the parking location..."
+                className="input-field w-full px-4 py-2.5 rounded-lg resize-none"
               />
-            </FormField>
-            <FormField label="Total Slots" error={errors.totalSlots} required>
-              <input
-                name="totalSlots"
-                type="number"
-                min="1"
-                value={form.totalSlots}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              />
-            </FormField>
+            </div>
           </div>
-        </div>
+        </FormSection>
 
-        <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800">Operating Hours</h3>
+        {/* Owner Info */}
+        <FormSection
+          title="Owner Information"
+          icon={<FaUser className="text-primary-400" />}
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField label="Open Time">
-              <input
-                name="openTime"
-                type="time"
-                value={form.openTime}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              />
-            </FormField>
-            <FormField label="Close Time">
-              <input
-                name="closeTime"
-                type="time"
-                value={form.closeTime}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              />
-            </FormField>
+            <InputField
+              label="Owner Name"
+              name="ownerName"
+              required
+              placeholder="John Doe"
+            />
+            <InputField
+              label="Owner Email"
+              name="ownerEmail"
+              type="email"
+              required
+              placeholder="john@example.com"
+            />
+            <InputField
+              label="Owner Phone"
+              name="ownerPhone"
+              type="tel"
+              placeholder="+1 (555) 123-4567"
+            />
           </div>
+        </FormSection>
+
+        {/* Pricing */}
+        <FormSection
+          title="Pricing"
+          icon={<FaDollarSign className="text-primary-400" />}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <InputField
+              label="Price per Hour ($)"
+              name="pricePerHour"
+              type="number"
+              required
+              placeholder="0.00"
+            />
+            <InputField
+              label="Daily Price ($)"
+              name="dailyPrice"
+              type="number"
+              placeholder="0.00"
+            />
+            <InputField
+              label="Weekly Price ($)"
+              name="weeklyPrice"
+              type="number"
+              placeholder="0.00"
+            />
+            <InputField
+              label="Monthly Price ($)"
+              name="monthlyPrice"
+              type="number"
+              placeholder="0.00"
+            />
+            <InputField
+              label="Night Charges ($)"
+              name="nightCharges"
+              type="number"
+              placeholder="0.00"
+            />
+            <InputField
+              label="Weekend Charges ($)"
+              name="weekendCharges"
+              type="number"
+              placeholder="0.00"
+            />
+            <InputField
+              label="Peak Hour Charges ($)"
+              name="peakHourCharges"
+              type="number"
+              placeholder="0.00"
+            />
+          </div>
+        </FormSection>
+
+        {/* Capacity & Types */}
+        <FormSection
+          title="Capacity & Vehicle Types"
+          icon={<FaTh className="text-gray-500 dark:text-gray-400" />}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <InputField
+              label="Total Slots"
+              name="totalSlots"
+              type="number"
+              required
+              placeholder="0"
+            />
+            <InputField
+              label="Car Slots"
+              name="carSlots"
+              type="number"
+              placeholder="0"
+            />
+            <InputField
+              label="Bike Slots"
+              name="bikeSlots"
+              type="number"
+              placeholder="0"
+            />
+            <InputField
+              label="EV Slots"
+              name="evSlots"
+              type="number"
+              placeholder="0"
+            />
+            <InputField
+              label="VIP Slots"
+              name="vipSlots"
+              type="number"
+              placeholder="0"
+            />
+            <InputField
+              label="Disabled Slots"
+              name="disabledSlots"
+              type="number"
+              placeholder="0"
+            />
+          </div>
+        </FormSection>
+
+        {/* Operating Hours */}
+        <FormSection
+          title="Operating Hours"
+          icon={<FaClock className="text-gray-500 dark:text-gray-400" />}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div className="flex items-center gap-3 col-span-1">
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="is24x7"
+                  checked={formData.is24x7}
+                  onChange={handleChange}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:ring-2 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-gray-900 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-400"></div>
+              </label>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300 ">
+                24x7
+              </span>
+            </div>
+            {!formData.is24x7 && (
+              <>
+                <InputField
+                  label="Opening Time"
+                  name="openingTime"
+                  type="time"
+                />
+                <InputField
+                  label="Closing Time"
+                  name="closingTime"
+                  type="time"
+                />
+              </>
+            )}
+          </div>
+        </FormSection>
+
+        {/* Location */}
+        <FormSection
+          title="Location"
+          icon={<FaCompass className="text-red-500" />}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <InputField
+              label="Latitude"
+              name="latitude"
+              type="number"
+              placeholder="40.7128"
+            />
+            <InputField
+              label="Longitude"
+              name="longitude"
+              type="number"
+              placeholder="-74.0060"
+            />
+          </div>
+        </FormSection>
+
+        {/* Parking Type & Status */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormSection
+            title="Parking Type"
+            icon={<FaTag className="text-primary-400" />}
+          >
+            <select
+              name="parkingType"
+              value={formData.parkingType}
+              onChange={handleChange}
+              className="select-field w-full px-4 py-2.5 rounded-lg"
+            >
+              {parkingTypes.map((type) => (
+                <option key={type.value} value={type.value}>
+                  {type.label}
+                </option>
+              ))}
+            </select>
+          </FormSection>
+
+          <FormSection
+            title="Status"
+            icon={<FaExclamationCircle className="text-primary-400" />}
+          >
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="select-field w-full px-4 py-2.5 rounded-lg"
+            >
+              {statusOptions.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          </FormSection>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800">Amenities</h3>
+        {/* Amenities */}
+        <FormSection
+          title="Amenities"
+          icon={<FaCheckSquare className="text-gray-500 dark:text-gray-400" />}
+        >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {amenitiesList.map((a) => (
+            {amenityOptions.map((amenity) => (
               <label
-                key={a.key}
-                className={`flex items-center gap-2 p-3 border rounded-lg cursor-pointer transition ${
-                  form.amenities[a.key]
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                key={amenity.value}
+                className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${
+                  formData.amenities.includes(amenity.value)
+                    ? 'border-primary-400 bg-gray-50/20'
+                    : 'border-gray-200 dark:border-gray-700  hover:border-gray-300:border-white/20'
                 }`}
               >
                 <input
                   type="checkbox"
-                  checked={form.amenities[a.key]}
-                  onChange={() => handleAmenity(a.key)}
-                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                  checked={formData.amenities.includes(amenity.value)}
+                  onChange={() => handleAmenityToggle(amenity.value)}
+                  className="sr-only"
                 />
-                <span className="text-sm text-gray-700">{a.label}</span>
+                <div
+                  className={`w-4 h-4 rounded flex items-center justify-center border ${
+                    formData.amenities.includes(amenity.value)
+                      ? 'bg-gray-500 border-primary-400 text-white'
+                      : 'border-gray-300'
+                  }`}
+                >
+                  {formData.amenities.includes(amenity.value) && (
+                    <svg
+                      className="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={3}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                  )}
+                </div>
+                <span className="text-sm text-gray-700 dark:text-gray-300 ">
+                  {amenity.label}
+                </span>
               </label>
             ))}
           </div>
-        </div>
+        </FormSection>
 
-        <div className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800">Description & Images</h3>
-          <FormField label="Description">
-            <textarea
-              name="description"
-              value={form.description}
-              onChange={handleChange}
-              rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none"
-            />
-          </FormField>
-          {existingImage && !image && (
-            <div className="relative inline-block">
-              <img
-                src={existingImage}
-                alt="Current"
-                className="h-32 w-48 object-cover rounded-lg"
-              />
-              <button
-                type="button"
-                onClick={() => { setExistingImage(null); setImage(null); }}
-                className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-                title="Remove image"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-          )}
-          <ImageUpload value={image} onChange={setImage} />
-        </div>
-
-        {errors.submit && (
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-            {errors.submit}
-          </div>
-        )}
-
-        <div className="flex items-center gap-3 justify-end">
+        {/* Action Buttons */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="flex items-center justify-end gap-3 pb-8"
+        >
           <button
             type="button"
             onClick={() => navigate('/parking')}
-            className="px-6 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition"
+            className="btn-ghost inline-flex items-center gap-2 px-6 py-2.5 rounded-lg"
           >
-            Cancel
+            <FaTimes /> Cancel
           </button>
-          <Button type="submit" loading={saving}>
-            {saving ? 'Saving...' : 'Update Parking'}
-          </Button>
-        </div>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="btn-primary inline-flex items-center gap-2 px-6 py-2.5 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {submitting ? (
+              <>
+                <svg
+                  className="animate-spin h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                  />
+                </svg>
+                Updating...
+              </>
+            ) : (
+              <>
+                <FaSave /> Update Parking
+              </>
+            )}
+          </button>
+        </motion.div>
       </form>
     </div>
   );
-}
+};
+
+export default EditParkingPage;

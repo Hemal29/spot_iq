@@ -5,17 +5,17 @@ import { QRCodeCanvas } from 'qrcode.react';
 import { FaMapMarkerAlt, FaCalendarAlt, FaClock, FaCar, FaTimes, FaEye, FaMoneyBillWave } from 'react-icons/fa';
 
 const statusConfig = {
-  upcoming: { bg: 'bg-blue-100', text: 'text-blue-700', dot: 'bg-blue-500' },
-  active: { bg: 'bg-green-100', text: 'text-green-700', dot: 'bg-green-500' },
-  completed: { bg: 'bg-gray-100', text: 'text-gray-600', dot: 'bg-gray-400' },
-  cancelled: { bg: 'bg-red-100', text: 'text-red-700', dot: 'bg-red-500' },
+  upcoming: { bg: 'bg-[#121214]', text: 'text-[#f3e0ae]', dot: 'bg-[#0a0a0b]0' },
+  active: { bg: 'bg-[#121214]', text: 'text-[#e7c588]/80', dot: 'bg-[#0a0a0b]0' },
+  completed: { bg: 'bg-[#121214]', text: 'text-[#e7c588]/80', dot: 'bg-gray-400' },
+  cancelled: { bg: 'bg-[#e7c588]', text: 'text-[#e7c588]', dot: 'bg-[#e7c588]' },
 };
 
 const paymentStatusConfig = {
-  paid: { bg: 'bg-green-100', text: 'text-green-700' },
-  pending: { bg: 'bg-yellow-100', text: 'text-yellow-700' },
-  failed: { bg: 'bg-red-100', text: 'text-red-700' },
-  refunded: { bg: 'bg-purple-100', text: 'text-purple-700' },
+  paid: { bg: 'bg-[#121214]', text: 'text-[#e7c588]/80' },
+  pending: { bg: 'bg-[#121214]', text: 'text-[#e7c588]/80' },
+  failed: { bg: 'bg-[#e7c588]', text: 'text-[#e7c588]' },
+  refunded: { bg: 'bg-[#121214]', text: 'text-[#e7c588]/80' },
 };
 
 const BookingCard = ({ booking, onCancel, onUpdate }) => {
@@ -40,14 +40,14 @@ const BookingCard = ({ booking, onCancel, onUpdate }) => {
   });
 
   return (
-    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition overflow-hidden">
+    <div className="bg-[#0a0a0b] dark:bg-[#0a0a0b] rounded-xl shadow-md hover:shadow-lg transition overflow-hidden">
       <div className="p-5">
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1 min-w-0">
-            <h4 className="font-semibold text-gray-800 text-sm truncate">
+            <h4 className="font-semibold text-[#f9f0d7] text-sm truncate">
               {booking.parking?.name || booking.parkingName}
             </h4>
-            <p className="text-xs text-gray-500 truncate flex items-center gap-1 mt-0.5">
+            <p className="text-xs text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 truncate flex items-center gap-1 mt-0.5">
               <FaMapMarkerAlt className="shrink-0" /> {booking.parking?.address || booking.parkingAddress}
             </p>
           </div>
@@ -61,32 +61,32 @@ const BookingCard = ({ booking, onCancel, onUpdate }) => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 text-xs text-gray-600 mb-3">
+        <div className="grid grid-cols-2 gap-2 text-xs text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 mb-3">
           <div className="flex items-center gap-1.5">
-            <FaCalendarAlt className="text-gray-400" /> {booking.startDate}
+            <FaCalendarAlt className="text-[#e7c588]/80 dark:text-[#e7c588]/80" /> {booking.startDate}
           </div>
           <div className="flex items-center gap-1.5">
-            <FaClock className="text-gray-400" /> {booking.startTime} - {booking.endTime}
+            <FaClock className="text-[#e7c588]/80 dark:text-[#e7c588]/80" /> {booking.startTime} - {booking.endTime}
           </div>
           {booking.vehicle?.vehicleNumber && (
             <div className="flex items-center gap-1.5">
-              <FaCar className="text-gray-400" /> {booking.vehicle.vehicleNumber}
+              <FaCar className="text-[#e7c588]/80 dark:text-[#e7c588]/80" /> {booking.vehicle.vehicleNumber}
             </div>
           )}
           <div className="flex items-center gap-1.5">
-            <FaMoneyBillWave className="text-gray-400" /> ${(booking.totalPrice || 0).toFixed(2)}
+            <FaMoneyBillWave className="text-[#e7c588]/80 dark:text-[#e7c588]/80" /> ${(booking.totalPrice || 0).toFixed(2)}
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           {(booking.status === 'upcoming' || booking.status === 'active') && (
-            <div className="bg-white p-1 rounded border border-gray-200">
+            <div className="bg-[#0a0a0b] dark:bg-[#0a0a0b] p-1 rounded border border-[#e7c588]/25">
               <QRCodeCanvas value={qrData} size={48} level="M" />
             </div>
           )}
           <div className="flex items-center gap-2 ml-auto">
             {booking.status === 'upcoming' && (
-              <button onClick={handleCancel} className="flex items-center gap-1 text-xs text-red-600 hover:text-red-700 font-medium px-3 py-1.5 border border-red-200 rounded-lg hover:bg-red-50 transition">
+              <button onClick={handleCancel} className="flex items-center gap-1 text-xs text-[#e7c588] hover:text-[#e7c588] font-medium px-3 py-1.5 border border-[#e7c588]/40 rounded-lg hover:bg-[#e7c588] transition">
                 <FaTimes /> Cancel
               </button>
             )}

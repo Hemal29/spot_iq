@@ -8,6 +8,7 @@ import { AppProvider } from './context/AppContext';
 import { ParkingProvider } from './context/ParkingContext';
 
 import Layout from './components/layout/Layout';
+import Walkthrough from './components/walkthrough/Walkthrough';
 
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -27,7 +28,7 @@ import NotFoundPage from './pages/NotFoundPage';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useContext(AuthContext);
-  if (loading) return <div className="flex items-center justify-center min-h-screen"><div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" /></div>;
+  if (loading) return <div className="flex items-center justify-center min-h-screen"><div className="w-10 h-10 border-4 border-[#e7c588]/40 border-t-transparent rounded-full animate-spin" /></div>;
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 }
 
@@ -82,6 +83,7 @@ export default function App() {
       <AppProvider>
         <ParkingProvider>
           <AppRoutes />
+          <Walkthrough />
           <ToastContainer
             position="top-right"
             autoClose={3000}

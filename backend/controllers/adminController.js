@@ -437,11 +437,9 @@ exports.getAnalytics = asyncHandler(async (req, res) => {
 exports.getOwners = asyncHandler(async (req, res) => {
   const [owners] = await sequelize.query(
     `SELECT po.*, u.name AS userName, u.email AS userEmail, u.phone AS userPhone,
-            COUNT(p.id) AS parkingCount
+            (SELECT COUNT(*) FROM Parkings WHERE ownerName = u.name OR ownerEmail = u.email) AS parkingCount
      FROM ParkingOwners po
      LEFT JOIN Users u ON u.id = po.userId
-     LEFT JOIN Parkings p ON p.userId = po.userId
-     GROUP BY po.id
      ORDER BY po.createdAt DESC`
   );
 
@@ -541,6 +539,13 @@ exports.markNotificationRead = asyncHandler(async (req, res, next) => {
 exports.markAllRead = asyncHandler(async (req, res) => {
   await Notification.update({ isRead: true }, { where: { isRead: false } });
   res.status(200).json({ success: true, message: 'All notifications marked as read' });
+});
+
+exports.deleteNotification = asyncHandler(async (req, res, next) => {
+  const notification = await Notification.findByPk(req.params.id);
+  if (!notification) return next(new AppError('Notification not found', 404));
+  await notification.destroy();
+  res.status(200).json({ success: true, message: 'Notification deleted' });
 });
 
 // ─── Support Tickets ──────────────────────────────────────────────────────────

@@ -19,10 +19,16 @@ const adminService = {
       headers: { 'Content-Type': 'multipart/form-data' },
     }),
 
-  createSlots: (parkingId, data) => api.post(`/slots/bulk/${parkingId}`, data),
+  getAllSlots: (params) => api.get('/slots', { params }),
   getSlotsByParking: (parkingId) => api.get(`/slots/parking/${parkingId}`),
+  getSlotById: (id) => api.get(`/slots/${id}`),
+  getSlotStats: (params) => api.get('/slots/stats', { params }),
+  createSlots: (parkingId, data) => api.post(`/slots/bulk/${parkingId}`, data),
+  createSlot: (data) => api.post('/slots', data),
   updateSlot: (id, data) => api.put(`/slots/${id}`, data),
   deleteSlot: (id) => api.delete(`/slots/${id}`),
+  bulkDeleteSlots: (ids) => api.delete('/slots/bulk', { data: { ids } }),
+  bulkUpdateSlots: (ids, status) => api.patch('/slots/bulk', { ids, status }),
 
   getAllBookings: (params) => api.get('/admin/bookings', { params }),
   cancelBooking: (id) => api.put(`/admin/bookings/${id}/cancel`),
@@ -48,6 +54,7 @@ const adminService = {
   deleteCoupon: (id) => api.delete(`/admin/coupons/${id}`),
 
   getNotifications: (params) => api.get('/admin/notifications', { params }),
+  deleteNotification: (id) => api.delete(`/admin/notifications/${id}`),
   createNotification: (data) => api.post('/admin/notifications', data),
   markNotificationRead: (id) => api.put(`/admin/notifications/${id}/read`),
   markAllNotificationsRead: () => api.put('/admin/notifications/read-all'),
@@ -56,7 +63,15 @@ const adminService = {
   updateTicketStatus: (id, data) => api.put(`/admin/tickets/${id}/status`, data),
   assignTicket: (id, data) => api.put(`/admin/tickets/${id}/assign`, data),
 
+  getSettings: () => api.get('/settings'),
+  updateSettings: (data) => api.put('/settings', data),
+  testEmailSettings: (data) => api.post('/settings/test-email', data),
+
   getReports: (params) => api.get('/admin/reports', { params }),
+
+  getRecommendationAnalytics: () => api.get('/recommendations/analytics'),
+  getBusinessInsights: () => api.get('/recommendations/insights'),
+  getMostRecommended: () => api.get('/recommendations/most-recommended'),
 
   getProfile: () => api.get('/admin/profile'),
   updateProfile: (data) => api.put('/admin/profile', data),

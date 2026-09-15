@@ -6,7 +6,7 @@ const FormField = ({ label, name, error, required, children }) => {
       {label && (
         <label
           htmlFor={name}
-          className="block text-sm font-medium text-gray-700 mb-1.5"
+          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
         >
           {label}
           {required && <span className="text-red-500 ml-0.5">*</span>}

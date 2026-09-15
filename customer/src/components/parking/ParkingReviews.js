@@ -61,25 +61,25 @@ const ParkingReviews = ({ parkingId }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6">
+    <div className="bg-[#0a0a0b] dark:bg-[#0a0a0b] rounded-xl shadow-md p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-800">Reviews</h3>
+          <h3 className="text-lg font-semibold text-[#f9f0d7]">Reviews</h3>
           {reviews.length > 0 && (
             <div className="flex items-center gap-2 mt-1">
-              <div className="flex text-yellow-400">
+              <div className="flex text-primary-400">
                 {[1, 2, 3, 4, 5].map((s) => (
-                  <FaStar key={s} className={s <= Math.round(averageRating) ? 'text-yellow-400' : 'text-gray-200'} size={14} />
+                  <FaStar key={s} className={s <= Math.round(averageRating) ? 'text-primary-400' : 'text-[#f3e0ae]'} size={14} />
                 ))}
               </div>
-              <span className="text-sm text-gray-500">{averageRating} ({reviews.length} reviews)</span>
+              <span className="text-sm text-[#e7c588]/80">{averageRating} ({reviews.length} reviews)</span>
             </div>
           )}
         </div>
         {isAuthenticated && (
           <button
             onClick={() => setShowModal(true)}
-            className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+            className="bg-primary-600 hover:bg-primary-700 text-[#f9f0d7] px-4 py-2 rounded-lg text-sm font-medium transition"
           >
             Write Review
           </button>
@@ -92,8 +92,8 @@ const ParkingReviews = ({ parkingId }) => {
         </div>
       ) : reviews.length === 0 ? (
         <div className="text-center py-8">
-          <FaCommentDots className="text-gray-300 text-4xl mx-auto mb-3" />
-          <p className="text-gray-500">No reviews yet</p>
+          <FaCommentDots className="text-[#e7c588]/80 text-4xl mx-auto mb-3" />
+          <p className="text-[#e7c588]/80 dark:text-[#e7c588]/80">No reviews yet</p>
           {isAuthenticated && (
             <button
               onClick={() => setShowModal(true)}
@@ -106,22 +106,22 @@ const ParkingReviews = ({ parkingId }) => {
       ) : (
         <div className="space-y-4">
           {reviews.map((review) => (
-            <div key={review._id} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+            <div key={review._id} className="border-b border-[#e7c588]/25 dark:border-[#e7c588]/25/50 pb-4 last:border-0 last:pb-0">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-9 h-9 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-semibold text-sm">
                   {review.user?.name?.charAt(0).toUpperCase() || <FaUser />}
                 </div>
                 <div>
-                  <p className="font-medium text-gray-800 text-sm">{review.user?.name || 'Anonymous'}</p>
-                  <p className="text-xs text-gray-400">{new Date(review.createdAt).toLocaleDateString()}</p>
+                  <p className="font-medium text-[#f9f0d7] text-sm">{review.user?.name || 'Anonymous'}</p>
+                  <p className="text-xs text-[#e7c588]/80">{new Date(review.createdAt).toLocaleDateString()}</p>
                 </div>
-                <div className="ml-auto flex text-yellow-400">
+                <div className="ml-auto flex text-primary-400">
                   {[1, 2, 3, 4, 5].map((s) => (
-                    <FaStar key={s} className={s <= review.rating ? 'text-yellow-400' : 'text-gray-200'} size={12} />
+                    <FaStar key={s} className={s <= review.rating ? 'text-primary-400' : 'text-[#f3e0ae]'} size={12} />
                   ))}
                 </div>
               </div>
-              <p className="text-sm text-gray-600 ml-12">{review.comment}</p>
+              <p className="text-sm text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 ml-12">{review.comment}</p>
             </div>
           ))}
         </div>
@@ -130,37 +130,37 @@ const ParkingReviews = ({ parkingId }) => {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowModal(false)} />
-          <div className="relative bg-white rounded-2xl p-6 w-full max-w-md animate-slideUp">
-            <button onClick={() => setShowModal(false)} className="absolute right-4 top-4 text-gray-400 hover:text-gray-600">
+          <div className="relative bg-[#0a0a0b] dark:bg-[#0a0a0b] rounded-2xl p-6 w-full max-w-md animate-slideUp">
+            <button onClick={() => setShowModal(false)} className="absolute right-4 top-4 text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:text-[#e7c588]/80">
               <FaTimes />
             </button>
-            <h4 className="text-lg font-semibold text-gray-800 mb-4">Write a Review</h4>
+            <h4 className="text-lg font-semibold text-[#f9f0d7] mb-4">Write a Review</h4>
 
-            {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg mb-4 text-sm">{error}</div>}
+            {error && <div className="bg-[#e7c588] border border-[#e7c588]/40 text-[#e7c588] px-4 py-2 rounded-lg mb-4 text-sm">{error}</div>}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
+                <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80 mb-2">Rating</label>
                 <div className="flex gap-1">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button key={star} type="button" onClick={() => setNewRating(star)} onMouseEnter={() => setHoverRating(star)} onMouseLeave={() => setHoverRating(0)}>
-                      <FaStar className={`text-2xl transition ${star <= (hoverRating || newRating) ? 'text-yellow-400' : 'text-gray-200'}`} />
+                      <FaStar className={`text-2xl transition ${star <= (hoverRating || newRating) ? 'text-primary-400' : 'text-[#f3e0ae]'}`} />
                     </button>
                   ))}
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Comment</label>
+                <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80 mb-1">Comment</label>
                 <textarea
                   rows={4} value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   placeholder="Share your experience..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none resize-none text-sm"
+                  className="w-full px-3 py-2 border border-[#e7c588]/25 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none resize-none text-sm"
                 />
               </div>
               <button
                 type="submit" disabled={submitting}
-                className="w-full bg-primary-600 hover:bg-primary-700 text-white font-medium py-2.5 rounded-lg transition flex items-center justify-center gap-2 disabled:opacity-60"
+                className="w-full bg-primary-600 hover:bg-primary-700 text-[#f9f0d7] font-medium py-2.5 rounded-lg transition flex items-center justify-center gap-2 disabled:opacity-60"
               >
                 {submitting ? <FaSpinner className="animate-spin" /> : null}
                 {submitting ? 'Submitting...' : 'Submit Review'}

@@ -39,20 +39,20 @@ const Testimonials = () => {
   const prev = () => setCurrent((prev) => (prev - 1 + testimonials.length) % testimonials.length);
 
   return (
-    <section className="py-16 lg:py-24 bg-white dark:bg-gray-900 relative overflow-hidden">
+    <section className="py-16 lg:py-24 bg-[#0a0a0b] dark:bg-[#0a0a0b] relative overflow-hidden">
       {/* 3D background decoration */}
-      <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-200/20 to-purple-200/20 dark:from-blue-800/10 dark:to-purple-800/10 rounded-full blur-3xl" />
-      <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-orange-200/20 to-pink-200/20 dark:from-orange-800/10 dark:to-pink-800/10 rounded-full blur-3xl" />
+      <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-[#e7c588]/10 to-[#e7c588]/20/10/10 rounded-full blur-3xl" />
+      <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-[#e7c588]/10 to-[#e7c588]/20/10/10 rounded-full blur-3xl" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12 lg:mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-100 dark:bg-blue-900/30 rounded-full text-blue-600 dark:text-blue-400 text-xs font-semibold mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#121214]/30 rounded-full text-primary-400 text-xs font-semibold mb-4">
             <FaQuoteLeft /> Testimonials
           </div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#f9f0d7] dark:text-[#f9f0d7]  mb-4">
             What Ahmedabad Says
           </h2>
-          <p className="text-gray-500 dark:text-gray-400 text-lg">
+          <p className="text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  text-lg">
             Hear from thousands of satisfied drivers across the city.
           </p>
         </div>
@@ -83,7 +83,7 @@ const Testimonials = () => {
           <div className="flex items-center justify-center gap-4 mt-6">
             <button
               onClick={prev}
-              className="p-3 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-blue-100 hover:text-blue-600 transition-all card-3d"
+              className="p-3 rounded-full bg-[#121214] dark:bg-[#121214] text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  hover:bg-[#121214] dark:hover:bg-[#1c1c1f]/50 dark:bg-[#121214] hover:text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 transition-all card-3d"
             >
               <FaChevronLeft />
             </button>
@@ -94,15 +94,15 @@ const Testimonials = () => {
                   onClick={() => setCurrent(i)}
                   className={`w-3 h-3 rounded-full transition-all duration-300 ${
                     i === current
-                      ? 'bg-blue-600 scale-125 shadow-md shadow-blue-500/30'
-                      : 'bg-gray-300 dark:bg-gray-600'
+                      ? 'bg-primary-400 scale-125 shadow-md shadow-primary-400/30'
+                      : 'bg-gray-300'
                   }`}
                 />
               ))}
             </div>
             <button
               onClick={next}
-              className="p-3 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-blue-100 hover:text-blue-600 transition-all card-3d"
+              className="p-3 rounded-full bg-[#121214] dark:bg-[#121214] text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  hover:bg-[#121214] dark:hover:bg-[#1c1c1f]/50 dark:bg-[#121214] hover:text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 transition-all card-3d"
             >
               <FaChevronRight />
             </button>
@@ -118,17 +118,17 @@ const TestimonialCard = ({ name, role, quote, rating, highlight, index }) => (
     className="group perspective-1000 animate-tilt-in"
     style={{ animationDelay: `${index * 100}ms` }}
   >
-    <div className="card-3d bg-white dark:bg-gray-800 rounded-2xl p-6 lg:p-8 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-xl transition-all duration-500 h-full relative overflow-hidden">
-      <FaQuoteLeft className="text-blue-100 dark:text-blue-900/40 text-5xl absolute top-4 left-4" />
+    <div className="card-3d bg-[#0a0a0b] dark:bg-[#0a0a0b] rounded-2xl p-6 lg:p-8 border border-[#e7c588]/25 dark:border-[#e7c588]/25/50 shadow-sm hover:shadow-xl transition-all duration-500 h-full relative overflow-hidden">
+      <FaQuoteLeft className="text-[#f9f0d7]/40 text-5xl absolute top-4 left-4" />
 
       <div className="relative z-10">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold text-lg shadow-md">
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br bg-primary-600 flex items-center justify-center text-[#f9f0d7] font-bold text-lg shadow-md">
             {name.charAt(0)}
           </div>
           <div className="flex-1">
-            <p className="font-semibold text-gray-900 dark:text-white text-sm">{name}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{role}</p>
+            <p className="font-semibold text-[#f9f0d7] dark:text-[#f9f0d7]  text-sm">{name}</p>
+            <p className="text-xs text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 ">{role}</p>
           </div>
         </div>
 
@@ -137,24 +137,24 @@ const TestimonialCard = ({ name, role, quote, rating, highlight, index }) => (
           {[...Array(5)].map((_, i) => (
             <FaStar
               key={i}
-              className={`text-sm ${i < rating ? 'text-yellow-400' : 'text-gray-200 dark:text-gray-600'}`}
+              className={`text-sm ${i < rating ? 'text-primary-400' : 'text-[#f3e0ae]'}`}
             />
           ))}
         </div>
 
-        <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed italic mb-4">
+        <p className="text-sm text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  leading-relaxed italic mb-4">
           &ldquo;{quote}&rdquo;
         </p>
 
         {highlight && (
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 dark:bg-blue-900/20 rounded-full text-xs font-medium text-blue-600 dark:text-blue-400">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#0a0a0b]/20 rounded-full text-xs font-medium text-primary-400">
             <FaStar className="text-[10px]" /> {highlight}
           </div>
         )}
       </div>
 
       {/* Hover glow */}
-      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-blue-500/5 to-purple-500/5 pointer-events-none" />
+      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-primary-400/5 to-[#e7c588]/5 pointer-events-none" />
     </div>
   </div>
 );

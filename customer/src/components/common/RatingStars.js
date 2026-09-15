@@ -25,14 +25,14 @@ const RatingStars = ({ rating = 0, editable = false, onChange }) => {
     const fill = displayRating >= value;
 
     if (fill) {
-      return <FaStar key={index} className="text-yellow-400" />;
+      return <FaStar key={index} className="text-primary-400" />;
     }
 
     if (displayRating >= value - 0.5 && displayRating < value) {
-      return <FaStarHalfAlt key={index} className="text-yellow-400" />;
+      return <FaStarHalfAlt key={index} className="text-primary-400" />;
     }
 
-    return <FaRegStar key={index} className="text-yellow-400" />;
+    return <FaRegStar key={index} className="text-primary-400" />;
   };
 
   return (

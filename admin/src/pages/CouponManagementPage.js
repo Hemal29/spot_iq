@@ -12,7 +12,9 @@ import {
   FaChevronRight,
   FaCheck,
   FaClock,
+  FaExclamationTriangle,
 } from 'react-icons/fa';
+import PageHeader from '../components/common/PageHeader';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -30,6 +32,7 @@ const initialFormState = {
 export default function CouponManagementPage() {
   const [coupons, setCoupons] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [modalOpen, setModalOpen] = useState(false);
@@ -45,11 +48,18 @@ export default function CouponManagementPage() {
 
   const fetchCoupons = async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await adminService.getCoupons();
-      setCoupons(res.data || []);
+      const data = res.data?.data || res.data || [];
+      const list = (Array.isArray(data) ? data : []).map((c) => ({
+        ...c,
+        status: c.isActive ? 'active' : 'inactive',
+      }));
+      setCoupons(list);
     } catch (err) {
       console.error('Failed to load coupons:', err);
+      setError('Failed to load coupons');
       toast.error('Failed to load coupons');
     } finally {
       setLoading(false);
@@ -158,10 +168,10 @@ export default function CouponManagementPage() {
 
     try {
       if (editingCoupon) {
-        await adminService.updateCoupon(editingCoupon._id, payload);
+        await adminService.updateCoupon(editingCoupon.id, payload);
         setCoupons((prev) =>
           prev.map((c) =>
-            c._id === editingCoupon._id ? { ...c, ...payload } : c
+            c.id === editingCoupon.id ? { ...c, ...payload } : c
           )
         );
         toast.success('Coupon updated successfully');
@@ -184,9 +194,9 @@ export default function CouponManagementPage() {
   const handleDelete = async () => {
     if (!deleteTarget) return;
     try {
-      await adminService.deleteCoupon(deleteTarget._id);
+      await adminService.deleteCoupon(deleteTarget.id);
       setCoupons((prev) =>
-        prev.filter((c) => c._id !== deleteTarget._id)
+        prev.filter((c) => c.id !== deleteTarget.id)
       );
       toast.success('Coupon deleted successfully');
     } catch (err) {
@@ -227,7 +237,7 @@ export default function CouponManagementPage() {
       new Date(coupon.expiresAt) > new Date();
     if (isActive) {
       return (
-        <span className="inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full border bg-green-500/20 text-green-400 border-green-500/30">
+        <span className="inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full border bg-gray-500/20 text-primary-400 border-primary-300/30">
           <FaCheck className="mr-1 text-[10px]" /> Active
         </span>
       );
@@ -245,17 +255,17 @@ export default function CouponManagementPage() {
     return (
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
         <div
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          className="absolute inset-0 bg-black/60 "
           onClick={closeModal}
         />
-        <div className="relative w-full max-w-lg bg-[#1E293B] border border-white/10 rounded-2xl shadow-2xl animate-slideUp">
+        <div className="relative w-full max-w-lg bg-[#f3f4f6] border border-white/10 rounded-2xl shadow-2xl animate-slideUp">
           <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
             <h2 className="text-lg font-semibold text-white">
               {editingCoupon ? 'Edit Coupon' : 'Create Coupon'}
             </h2>
             <button
               onClick={closeModal}
-              className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+              className="p-1.5 rounded-lg text-gray-400 dark:text-gray-500 hover:text-white hover:bg-white/10 transition-colors"
             >
               <FaTimes className="text-lg" />
             </button>
@@ -271,10 +281,10 @@ export default function CouponManagementPage() {
                 value={formData.code}
                 onChange={(e) => handleChange('code', e.target.value.toUpperCase())}
                 placeholder="e.g. SAVE20"
-                className={`w-full px-4 py-2.5 bg-white/5 border rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition ${
+                className={`w-full px-4 py-2.5 bg-white/5 border rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-400/50 transition ${
                   formErrors.code
                     ? 'border-red-500/50'
-                    : 'border-white/10 focus:border-orange-500'
+                    : 'border-white/10 focus:border-primary-400'
                 }`}
               />
               {formErrors.code && (
@@ -291,7 +301,7 @@ export default function CouponManagementPage() {
                 onChange={(e) => handleChange('description', e.target.value)}
                 placeholder="Brief description of the coupon..."
                 rows={2}
-                className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition resize-none"
+                className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-400/50 focus:border-primary-400 transition resize-none"
               />
             </div>
 
@@ -303,7 +313,7 @@ export default function CouponManagementPage() {
                 <select
                   value={formData.discountType}
                   onChange={(e) => handleChange('discountType', e.target.value)}
-                  className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition"
+                  className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary-400/50 focus:border-primary-400 transition"
                 >
                   <option value="percentage">Percentage</option>
                   <option value="fixed">Fixed Amount</option>
@@ -321,13 +331,13 @@ export default function CouponManagementPage() {
                     onChange={(e) => handleChange('discountValue', e.target.value)}
                     placeholder={formData.discountType === 'percentage' ? 'e.g. 20' : 'e.g. 500'}
                     min="0"
-                    className={`w-full px-4 py-2.5 bg-white/5 border rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition ${
+                    className={`w-full px-4 py-2.5 bg-white/5 border rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-400/50 transition ${
                       formErrors.discountValue
                         ? 'border-red-500/50'
-                        : 'border-white/10 focus:border-orange-500'
+                        : 'border-white/10 focus:border-primary-400'
                     }`}
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-sm">
                     {formData.discountType === 'percentage' ? '%' : '₹'}
                   </span>
                 </div>
@@ -350,10 +360,10 @@ export default function CouponManagementPage() {
                   onChange={(e) => handleChange('minBookingAmount', e.target.value)}
                   placeholder="0"
                   min="0"
-                  className={`w-full px-4 py-2.5 bg-white/5 border rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition ${
+                  className={`w-full px-4 py-2.5 bg-white/5 border rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-400/50 transition ${
                     formErrors.minBookingAmount
                       ? 'border-red-500/50'
-                      : 'border-white/10 focus:border-orange-500'
+                      : 'border-white/10 focus:border-primary-400'
                   }`}
                 />
                 {formErrors.minBookingAmount && (
@@ -373,10 +383,10 @@ export default function CouponManagementPage() {
                   onChange={(e) => handleChange('maxDiscount', e.target.value)}
                   placeholder="Unlimited"
                   min="0"
-                  className={`w-full px-4 py-2.5 bg-white/5 border rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition ${
+                  className={`w-full px-4 py-2.5 bg-white/5 border rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-400/50 transition ${
                     formErrors.maxDiscount
                       ? 'border-red-500/50'
-                      : 'border-white/10 focus:border-orange-500'
+                      : 'border-white/10 focus:border-primary-400'
                   }`}
                 />
                 {formErrors.maxDiscount && (
@@ -398,10 +408,10 @@ export default function CouponManagementPage() {
                   onChange={(e) => handleChange('usageLimit', e.target.value)}
                   placeholder="Unlimited"
                   min="1"
-                  className={`w-full px-4 py-2.5 bg-white/5 border rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition ${
+                  className={`w-full px-4 py-2.5 bg-white/5 border rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-400/50 transition ${
                     formErrors.usageLimit
                       ? 'border-red-500/50'
-                      : 'border-white/10 focus:border-orange-500'
+                      : 'border-white/10 focus:border-primary-400'
                   }`}
                 />
                 {formErrors.usageLimit && (
@@ -419,10 +429,10 @@ export default function CouponManagementPage() {
                   type="date"
                   value={formData.expiresAt}
                   onChange={(e) => handleChange('expiresAt', e.target.value)}
-                  className={`w-full px-4 py-2.5 bg-white/5 border rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition ${
+                  className={`w-full px-4 py-2.5 bg-white/5 border rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-primary-400/50 transition ${
                     formErrors.expiresAt
                       ? 'border-red-500/50'
-                      : 'border-white/10 focus:border-orange-500'
+                      : 'border-white/10 focus:border-primary-400'
                   }`}
                 />
                 {formErrors.expiresAt && (
@@ -444,7 +454,7 @@ export default function CouponManagementPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-xl transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-xl transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {submitting ? (
                   <>
@@ -488,10 +498,10 @@ export default function CouponManagementPage() {
     return (
       <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
         <div
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          className="absolute inset-0 bg-black/60 "
           onClick={() => setDeleteTarget(null)}
         />
-        <div className="relative w-full max-w-md bg-[#1E293B] border border-white/10 rounded-2xl shadow-2xl p-6 animate-slideUp">
+        <div className="relative w-full max-w-md bg-[#f3f4f6] border border-white/10 rounded-2xl shadow-2xl p-6 animate-slideUp">
           <div className="flex flex-col items-center text-center">
             <div className="w-14 h-14 rounded-full bg-red-500/20 flex items-center justify-center mb-4">
               <FaTrash className="text-2xl text-red-400" />
@@ -499,7 +509,7 @@ export default function CouponManagementPage() {
             <h3 className="text-lg font-semibold text-white mb-2">
               Delete Coupon
             </h3>
-            <p className="text-sm text-gray-400 mb-6">
+            <p className="text-sm text-gray-400 dark:text-gray-500 mb-6">
               Are you sure you want to delete{' '}
               <span className="text-white font-medium">
                 {deleteTarget.code}
@@ -515,7 +525,7 @@ export default function CouponManagementPage() {
               </button>
               <button
                 onClick={handleDelete}
-                className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-xl transition shadow-sm"
+                className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-600 hover:from-red-600 hover:to-red-700 rounded-xl transition shadow-sm"
               >
                 Delete
               </button>
@@ -528,10 +538,10 @@ export default function CouponManagementPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-[#0F172A] p-6">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800  p-6">
         <div className="flex items-center justify-center h-64">
           <svg
-            className="animate-spin h-10 w-10 text-orange-500"
+            className="animate-spin h-10 w-10 text-gray-500"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -555,6 +565,23 @@ export default function CouponManagementPage() {
     );
   }
 
+  if (error && !coupons.length) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-800  p-6">
+        <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
+          <FaExclamationTriangle className="text-4xl text-red-400 mb-3" />
+          <p className="text-gray-600 dark:text-gray-400 dark:text-gray-500  mb-4">{error}</p>
+          <button
+            onClick={fetchCoupons}
+            className="px-5 py-2.5 bg-primary-500 text-white text-sm font-medium rounded-xl hover:bg-primary-600 transition-all"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const pageNumbers = [];
   const maxVisible = 5;
   let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
@@ -567,29 +594,25 @@ export default function CouponManagementPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0F172A] p-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-800  p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Coupon Management
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Create and manage discount coupons
-            </p>
-          </div>
-          <button
-            onClick={openCreateModal}
-            className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 rounded-xl transition shadow-sm"
-          >
-            <FaPlus /> Create Coupon
-          </button>
-        </div>
+        <PageHeader
+          title="Coupon Management"
+          subtitle="Create and manage discount coupons"
+          action={
+            <button
+              onClick={openCreateModal}
+              className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-xl transition shadow-sm"
+            >
+              <FaPlus /> Create Coupon
+            </button>
+          }
+        />
 
-        <div className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden">
-          <div className="p-4 border-b border-gray-200 dark:border-white/10">
+        <div className="bg-white dark:bg-gray-900   rounded-2xl border border-gray-200 dark:border-gray-700  shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-gray-200 dark:border-gray-700 ">
             <div className="relative">
-              <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
+              <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-sm" />
               <input
                 type="text"
                 placeholder="Search by coupon code..."
@@ -598,7 +621,7 @@ export default function CouponManagementPage() {
                   setSearch(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full max-w-md pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition"
+                className="w-full max-w-md pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-800  border border-gray-200 dark:border-gray-700  rounded-xl text-sm text-gray-900 dark:text-gray-100  placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-400/50 focus:border-primary-400 transition"
               />
             </div>
           </div>
@@ -606,34 +629,34 @@ export default function CouponManagementPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200 dark:border-white/10">
-                  <th className="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                <tr className="border-b border-gray-200 dark:border-gray-700 ">
+                  <th className="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500  uppercase tracking-wider">
                     Code
                   </th>
-                  <th className="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500  uppercase tracking-wider">
                     Discount
                   </th>
-                  <th className="text-right px-6 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="text-right px-6 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500  uppercase tracking-wider">
                     Min Amount
                   </th>
-                  <th className="text-right px-6 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="text-right px-6 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500  uppercase tracking-wider">
                     Max Discount
                   </th>
-                  <th className="text-right px-6 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="text-right px-6 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500  uppercase tracking-wider">
                     Used / Max
                   </th>
-                  <th className="text-center px-6 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="text-center px-6 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500  uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="text-left px-6 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500  uppercase tracking-wider">
                     Expires At
                   </th>
-                  <th className="text-right px-6 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="text-right px-6 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500  uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-white/5">
+              <tbody className="divide-y divide-gray-200">
                 {paginatedCoupons.length === 0 ? (
                   <tr>
                     <td
@@ -641,7 +664,7 @@ export default function CouponManagementPage() {
                       className="px-6 py-12 text-center text-gray-400"
                     >
                       <div className="flex flex-col items-center gap-2">
-                        <FaTag className="text-3xl text-gray-300 dark:text-gray-600" />
+                        <FaTag className="text-3xl text-gray-300" />
                         <p className="text-sm">
                           {search
                             ? 'No coupons match your search'
@@ -650,7 +673,7 @@ export default function CouponManagementPage() {
                         {!search && (
                           <button
                             onClick={openCreateModal}
-                            className="mt-2 text-sm text-orange-500 hover:text-orange-400 font-medium"
+                            className="mt-2 text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:text-gray-400 dark:text-gray-500 font-medium"
                           >
                             Create your first coupon
                           </button>
@@ -666,43 +689,43 @@ export default function CouponManagementPage() {
 
                     return (
                       <tr
-                        key={coupon._id}
-                        className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors"
+                        key={coupon.id}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800  transition-colors"
                       >
                         <td className="px-6 py-3.5">
                           <div className="flex items-center gap-2">
-                            <span className="inline-flex items-center px-2.5 py-1 text-xs font-mono font-bold text-orange-400 bg-orange-500/10 rounded-lg border border-orange-500/20">
+                            <span className="inline-flex items-center px-2.5 py-1 text-xs font-mono font-bold text-gray-400 dark:text-gray-500 bg-gray-500/10 rounded-lg border border-primary-400/20">
                               {coupon.code}
                             </span>
                           </div>
                           {coupon.description && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate max-w-[200px]">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500  mt-1 truncate max-w-[200px]">
                               {coupon.description}
                             </p>
                           )}
                         </td>
                         <td className="px-6 py-3.5">
-                          <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          <span className="text-sm font-medium text-gray-900 dark:text-gray-100 ">
                             {coupon.discountType === 'percentage'
                               ? `${coupon.discountValue}%`
                               : `₹${Number(coupon.discountValue).toLocaleString(
                                   'en-IN'
                                 )}`}
                           </span>
-                          <span className="text-xs text-gray-500 dark:text-gray-400 ml-1.5">
+                          <span className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500  ml-1.5">
                             {coupon.discountType === 'percentage'
                               ? 'OFF'
                               : 'OFF'}
                           </span>
                         </td>
-                        <td className="px-6 py-3.5 text-right text-sm text-gray-700 dark:text-gray-300">
+                        <td className="px-6 py-3.5 text-right text-sm text-gray-700 dark:text-gray-300 ">
                           {coupon.minBookingAmount
                             ? `₹${Number(
                                 coupon.minBookingAmount
                               ).toLocaleString('en-IN')}`
                             : '-'}
                         </td>
-                        <td className="px-6 py-3.5 text-right text-sm text-gray-700 dark:text-gray-300">
+                        <td className="px-6 py-3.5 text-right text-sm text-gray-700 dark:text-gray-300 ">
                           {coupon.maxDiscount
                             ? `₹${Number(coupon.maxDiscount).toLocaleString(
                                 'en-IN'
@@ -710,24 +733,24 @@ export default function CouponManagementPage() {
                             : '-'}
                         </td>
                         <td className="px-6 py-3.5 text-right">
-                          <span className="text-sm text-gray-700 dark:text-gray-300">
+                          <span className="text-sm text-gray-700 dark:text-gray-300 ">
                             {coupon.usedCount || 0}
                             {coupon.usageLimit ? (
-                              <span className="text-gray-400 dark:text-gray-500">
+                              <span className="text-gray-400 dark:text-gray-500 ">
                                 {' '}
                                 / {coupon.usageLimit}
                               </span>
                             ) : (
-                              <span className="text-gray-400 dark:text-gray-500">
+                              <span className="text-gray-400 dark:text-gray-500 ">
                                 {' '}
                                 / ∞
                               </span>
                             )}
                           </span>
                           {coupon.usageLimit && (
-                            <div className="mt-1.5 w-20 h-1.5 bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
+                            <div className="mt-1.5 w-20 h-1.5 bg-gray-200 dark:bg-gray-700  rounded-full overflow-hidden">
                               <div
-                                className="h-full bg-gradient-to-r from-orange-500 to-orange-600 rounded-full transition-all"
+                                className="h-full bg-primary-500 rounded-full transition-all"
                                 style={{
                                   width: `${Math.min(
                                     ((coupon.usedCount || 0) /
@@ -748,7 +771,7 @@ export default function CouponManagementPage() {
                             className={`text-sm ${
                               isExpired
                                 ? 'text-red-400'
-                                : 'text-gray-700 dark:text-gray-300'
+                                : 'text-gray-700 dark:text-gray-300 '
                             }`}
                           >
                             {coupon.expiresAt
@@ -766,7 +789,7 @@ export default function CouponManagementPage() {
                           <div className="flex items-center justify-end gap-1.5">
                             <button
                               onClick={() => openEditModal(coupon)}
-                              className="p-2 text-blue-400 hover:bg-blue-500/10 rounded-lg transition"
+                              className="p-2 text-gray-400 dark:text-gray-500 hover:bg-gray-500/10 rounded-lg transition"
                               title="Edit Coupon"
                             >
                               <FaEdit className="text-sm" />
@@ -789,8 +812,8 @@ export default function CouponManagementPage() {
           </div>
 
           {totalPages > 1 && (
-            <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/[0.02]">
-              <div className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex items-center justify-between px-6 py-3 border-t border-gray-200 dark:border-gray-700  bg-gray-50/50[0.02]">
+              <div className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 ">
                 Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}-
                 {Math.min(
                   currentPage * ITEMS_PER_PAGE,
@@ -802,7 +825,7 @@ export default function CouponManagementPage() {
                 <button
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
-                  className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition"
+                  className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 dark:text-gray-500  hover:bg-gray-200 dark:hover:bg-gray-700 dark:bg-gray-700  disabled:opacity-30 disabled:cursor-not-allowed transition"
                 >
                   <FaChevronLeft className="text-xs" />
                 </button>
@@ -812,8 +835,8 @@ export default function CouponManagementPage() {
                     onClick={() => setCurrentPage(page)}
                     className={`w-8 h-8 text-sm rounded-lg transition ${
                       page === currentPage
-                        ? 'bg-orange-500 text-white'
-                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10'
+                        ? 'bg-gray-500 text-white'
+                        : 'text-gray-600 dark:text-gray-400 dark:text-gray-500  hover:bg-gray-200 dark:hover:bg-gray-700 dark:bg-gray-700 '
                     }`}
                   >
                     {page}
@@ -824,7 +847,7 @@ export default function CouponManagementPage() {
                     setCurrentPage((p) => Math.min(totalPages, p + 1))
                   }
                   disabled={currentPage === totalPages}
-                  className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition"
+                  className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 dark:text-gray-500  hover:bg-gray-200 dark:hover:bg-gray-700 dark:bg-gray-700  disabled:opacity-30 disabled:cursor-not-allowed transition"
                 >
                   <FaChevronRight className="text-xs" />
                 </button>

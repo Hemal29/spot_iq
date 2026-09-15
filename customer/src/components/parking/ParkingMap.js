@@ -25,11 +25,11 @@ const ParkingMap = ({ parkings = [], center, zoom = 12 }) => {
 
   if (loadError) {
     return (
-      <div className="w-full h-full min-h-[300px] bg-gray-100 rounded-xl flex items-center justify-center">
-        <div className="text-center text-gray-500">
-          <FaMapMarkerAlt className="text-4xl mx-auto mb-2 text-gray-300" />
+      <div className="w-full h-full min-h-[300px] bg-[#121214] dark:bg-[#121214] rounded-xl flex items-center justify-center">
+        <div className="text-center text-[#e7c588]/80">
+          <FaMapMarkerAlt className="text-4xl mx-auto mb-2 text-[#e7c588]/80" />
           <p className="text-sm">Map unavailable</p>
-          <p className="text-xs text-gray-400">Failed to load Google Maps</p>
+          <p className="text-xs text-[#e7c588]/80">Failed to load Google Maps</p>
         </div>
       </div>
     );
@@ -37,7 +37,7 @@ const ParkingMap = ({ parkings = [], center, zoom = 12 }) => {
 
   if (!isLoaded) {
     return (
-      <div className="w-full h-full min-h-[300px] bg-gray-100 rounded-xl flex items-center justify-center">
+      <div className="w-full h-full min-h-[300px] bg-[#121214] dark:bg-[#121214] rounded-xl flex items-center justify-center">
         <FaSpinner className="animate-spin text-primary-600 text-2xl" />
       </div>
     );
@@ -85,8 +85,8 @@ const ParkingMap = ({ parkings = [], center, zoom = 12 }) => {
           onCloseClick={() => setSelected(null)}
         >
           <div className="p-2 max-w-[200px]">
-            <h4 className="font-semibold text-gray-800 text-sm">{selected.name}</h4>
-            <p className="text-xs text-gray-500 mt-1">{selected.address}</p>
+            <h4 className="font-semibold text-[#f9f0d7] text-sm">{selected.name}</h4>
+            <p className="text-xs text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 mt-1">{selected.address}</p>
             <p className="text-primary-600 font-bold text-sm mt-1">${selected.pricePerHour}/hr</p>
             <Link
               to={`/parking/${selected._id}`}

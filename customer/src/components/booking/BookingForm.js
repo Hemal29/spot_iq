@@ -77,61 +77,61 @@ const BookingForm = ({ parking, onCalculate }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4">Book a Slot</h3>
+    <div className="bg-[#0a0a0b] dark:bg-[#0a0a0b] rounded-xl shadow-md p-6">
+      <h3 className="text-lg font-semibold text-[#f9f0d7] mb-4">Book a Slot</h3>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80 mb-1">
             <FaCalendarAlt className="inline mr-1" /> Date
           </label>
           <DatePicker
             selected={startDate}
             onChange={(date) => { setStartDate(date); if (errors.startDate) setErrors({ ...errors, startDate: '' }); }}
             minDate={new Date()}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm ${errors.startDate ? 'border-red-500' : 'border-gray-300'}`}
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm ${errors.startDate ? 'border-[#e7c588]/40' : 'border-[#e7c588]/25'}`}
           />
-          {errors.startDate && <p className="text-red-500 text-xs mt-1">{errors.startDate}</p>}
+          {errors.startDate && <p className="text-[#e7c588] text-xs mt-1">{errors.startDate}</p>}
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80 mb-1">
               <FaClock className="inline mr-1" /> Start Time
             </label>
             <input
               type="time" value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
+              className="w-full px-3 py-2 border border-[#e7c588]/25 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80 mb-1">
               <FaClock className="inline mr-1" /> End Time
             </label>
             <input
               type="time" value={endTime}
               onChange={(e) => { setEndTime(e.target.value); if (errors.endTime) setErrors({ ...errors, endTime: '' }); }}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm ${errors.endTime ? 'border-red-500' : 'border-gray-300'}`}
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm ${errors.endTime ? 'border-[#e7c588]/40' : 'border-[#e7c588]/25'}`}
             />
-            {errors.endTime && <p className="text-red-500 text-xs mt-1">{errors.endTime}</p>}
+            {errors.endTime && <p className="text-[#e7c588] text-xs mt-1">{errors.endTime}</p>}
           </div>
         </div>
 
-        <div className="bg-gray-50 rounded-lg p-3 flex items-center justify-between text-sm">
-          <span className="text-gray-600">Duration:</span>
-          <span className="font-semibold text-gray-800">{duration} hour{duration !== 1 ? 's' : ''}</span>
+        <div className="bg-[#0a0a0b] dark:bg-[#121214] rounded-lg p-3 flex items-center justify-between text-sm">
+          <span className="text-[#e7c588]/80 dark:text-[#e7c588]/80">Duration:</span>
+          <span className="font-semibold text-[#f9f0d7]">{duration} hour{duration !== 1 ? 's' : ''}</span>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80 mb-1">
             <FaCar className="inline mr-1" /> Vehicle
           </label>
           {loadingVehicles ? (
-            <div className="flex items-center gap-2 text-sm text-gray-500 py-2">
+            <div className="flex items-center gap-2 text-sm text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 py-2">
               <FaSpinner className="animate-spin" /> Loading vehicles...
             </div>
           ) : vehicles.length === 0 ? (
-            <div className="text-sm text-gray-500 py-2">
+            <div className="text-sm text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 py-2">
               <p>No vehicles added yet.</p>
               <button type="button" className="text-primary-600 hover:text-primary-700 font-medium flex items-center gap-1 mt-1">
                 <FaPlus /> Add Vehicle
@@ -141,7 +141,7 @@ const BookingForm = ({ parking, onCalculate }) => {
             <select
               value={selectedVehicle}
               onChange={(e) => { setSelectedVehicle(e.target.value); if (errors.vehicle) setErrors({ ...errors, vehicle: '' }); }}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm bg-white ${errors.vehicle ? 'border-red-500' : 'border-gray-300'}`}
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none text-sm bg-[#0a0a0b] dark:bg-[#0a0a0b] ${errors.vehicle ? 'border-[#e7c588]/40' : 'border-[#e7c588]/25'}`}
             >
               <option value="">Select a vehicle</option>
               {vehicles.map((v) => (
@@ -151,17 +151,17 @@ const BookingForm = ({ parking, onCalculate }) => {
               ))}
             </select>
           )}
-          {errors.vehicle && <p className="text-red-500 text-xs mt-1">{errors.vehicle}</p>}
+          {errors.vehicle && <p className="text-[#e7c588] text-xs mt-1">{errors.vehicle}</p>}
         </div>
 
         <div className="bg-primary-50 rounded-lg p-3 flex items-center justify-between">
-          <span className="text-sm font-medium text-gray-700">Total:</span>
+          <span className="text-sm font-medium text-[#f3e0ae]">Total:</span>
           <span className="text-xl font-bold text-primary-600">${totalPrice.toFixed(2)}</span>
         </div>
 
         <button
           type="submit"
-          className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 rounded-lg transition"
+          className="w-full bg-primary-600 hover:bg-primary-700 text-[#f9f0d7] font-semibold py-2.5 rounded-lg transition"
         >
           Reserve Now
         </button>

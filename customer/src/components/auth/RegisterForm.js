@@ -15,7 +15,7 @@ const getPasswordStrength = (pw) => {
 };
 
 const strengthLabels = ['Weak', 'Fair', 'Good', 'Strong', 'Very Strong'];
-const strengthColors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500', 'bg-green-600'];
+const strengthColors = ['bg-[#e7c588]', 'bg-[#0a0a0b]0', 'bg-[#0a0a0b]0', 'bg-[#0a0a0b]0', 'bg-primary-400'];
 
 const RegisterForm = () => {
   const { register } = useAuth();
@@ -71,52 +71,52 @@ const RegisterForm = () => {
   };
 
   const inputClass = (field) =>
-    `w-full pl-10 pr-10 py-3 bg-gray-50 dark:bg-white/5 border rounded-xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 transition-all ${
-      errors[field] ? 'border-red-500 dark:border-red-500/50 focus:ring-red-500/20' : 'border-gray-300 dark:border-white/10 focus:border-blue-500 dark:focus:border-orange-500/50 focus:ring-blue-500/20 dark:focus:ring-orange-500/20'
+    `w-full pl-10 pr-10 py-3 bg-[#0a0a0b] dark:bg-[#121214]  border rounded-xl text-[#f9f0d7] dark:text-[#f9f0d7]  placeholder-gray-500 focus:outline-none focus:ring-2 transition-all ${
+      errors[field] ? 'border-[#e7c588]/40 focus:ring-[#e7c588]/40' : 'border-[#e7c588]/25  focus:border-primary-400:border-primary-400/50 focus:ring-primary-400/20:ring-primary-400/20'
     }`;
 
   return (
     <div className="w-full">
       {apiError && (
-        <div className="bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-400 px-4 py-3 rounded-xl mb-5 text-sm animate-slideUp">
+        <div className="bg-[#e7c588]/10 border border-[#e7c588]/40 text-[#e7c588] px-4 py-3 rounded-xl mb-5 text-sm animate-slideUp">
           {apiError}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="animate-tilt-in">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1.5">Full Name</label>
+          <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80  mb-1.5">Full Name</label>
           <div className="relative group">
-            <FaUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 group-focus-within:text-blue-500 dark:group-focus-within:text-orange-400 transition-colors" />
+            <FaUser className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#e7c588]/80 dark:text-[#e7c588]/80  group-focus-within:text-[#e7c588]/80within:text-[#e7c588]/80 dark:text-[#e7c588]/80 transition-colors" />
             <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="John Doe" className={inputClass('name')} />
           </div>
-          {errors.name && <p className="text-red-600 dark:text-red-400 text-xs mt-1.5">{errors.name}</p>}
+          {errors.name && <p className="text-[#e7c588] text-xs mt-1.5">{errors.name}</p>}
         </div>
 
         <div className="animate-tilt-in" style={{ animationDelay: '0.05s' }}>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1.5">Email</label>
+          <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80  mb-1.5">Email</label>
           <div className="relative group">
-            <FaEnvelope className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 group-focus-within:text-blue-500 dark:group-focus-within:text-orange-400 transition-colors" />
+            <FaEnvelope className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#e7c588]/80 dark:text-[#e7c588]/80  group-focus-within:text-[#e7c588]/80within:text-[#e7c588]/80 dark:text-[#e7c588]/80 transition-colors" />
             <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="you@example.com" className={inputClass('email')} />
           </div>
-          {errors.email && <p className="text-red-600 dark:text-red-400 text-xs mt-1.5">{errors.email}</p>}
+          {errors.email && <p className="text-[#e7c588] text-xs mt-1.5">{errors.email}</p>}
         </div>
 
         <div className="animate-tilt-in" style={{ animationDelay: '0.1s' }}>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1.5">Phone</label>
+          <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80  mb-1.5">Phone</label>
           <div className="relative group">
-            <FaPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 group-focus-within:text-blue-500 dark:group-focus-within:text-orange-400 transition-colors" />
+            <FaPhone className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#e7c588]/80 dark:text-[#e7c588]/80  group-focus-within:text-[#e7c588]/80within:text-[#e7c588]/80 dark:text-[#e7c588]/80 transition-colors" />
             <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="+91 98765 43210" className={inputClass('phone')} />
           </div>
-          {errors.phone && <p className="text-red-600 dark:text-red-400 text-xs mt-1.5">{errors.phone}</p>}
+          {errors.phone && <p className="text-[#e7c588] text-xs mt-1.5">{errors.phone}</p>}
         </div>
 
         <div className="animate-tilt-in" style={{ animationDelay: '0.15s' }}>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1.5">Password</label>
+          <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80  mb-1.5">Password</label>
           <div className="relative group">
-            <FaLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 group-focus-within:text-blue-500 dark:group-focus-within:text-orange-400 transition-colors" />
+            <FaLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#e7c588]/80 dark:text-[#e7c588]/80  group-focus-within:text-[#e7c588]/80within:text-[#e7c588]/80 dark:text-[#e7c588]/80 transition-colors" />
             <input type={showPassword ? 'text' : 'password'} name="password" value={formData.password} onChange={handleChange} placeholder="Min. 6 characters" className={inputClass('password')} />
-            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#e7c588]/80 dark:text-[#e7c588]/80  hover:text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  transition-colors">
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
@@ -124,25 +124,25 @@ const RegisterForm = () => {
             <div className="mt-2">
               <div className="flex gap-1">
                 {[0, 1, 2, 3, 4].map((i) => (
-                  <div key={i} className={`h-1.5 flex-1 rounded-full ${i < strength ? strengthColors[strength - 1] : 'bg-gray-200 dark:bg-white/10'} transition-all duration-300`} />
+                  <div key={i} className={`h-1.5 flex-1 rounded-full ${i < strength ? strengthColors[strength - 1] : 'bg-[#1c1c1f] dark:bg-[#1c1c1f] '} transition-all duration-300`} />
                 ))}
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">Strength: <span className={`font-medium ${strength >= 4 ? 'text-green-600 dark:text-green-400' : strength >= 3 ? 'text-yellow-600 dark:text-yellow-400' : 'text-red-600 dark:text-red-400'}`}>{strengthLabels[strength - 1] || 'None'}</span></p>
+              <p className="text-xs text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  mt-1">Strength: <span className={`font-medium ${strength >= 4 ? 'text-primary-400' : strength >= 3 ? 'text-primary-400' : 'text-[#e7c588]'}`}>{strengthLabels[strength - 1] || 'None'}</span></p>
             </div>
           )}
-          {errors.password && <p className="text-red-600 dark:text-red-400 text-xs mt-1.5">{errors.password}</p>}
+          {errors.password && <p className="text-[#e7c588] text-xs mt-1.5">{errors.password}</p>}
         </div>
 
         <div className="animate-tilt-in" style={{ animationDelay: '0.2s' }}>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-400 mb-1.5">Confirm Password</label>
+          <label className="block text-sm font-medium text-[#f3e0ae] dark:text-[#e7c588]/80  mb-1.5">Confirm Password</label>
           <div className="relative group">
-            <FaLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 group-focus-within:text-blue-500 dark:group-focus-within:text-orange-400 transition-colors" />
+            <FaLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#e7c588]/80 dark:text-[#e7c588]/80  group-focus-within:text-[#e7c588]/80within:text-[#e7c588]/80 dark:text-[#e7c588]/80 transition-colors" />
             <input type={showConfirm ? 'text' : 'password'} name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} placeholder="Confirm your password" className={inputClass('confirmPassword')} />
-            <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+            <button type="button" onClick={() => setShowConfirm(!showConfirm)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#e7c588]/80 dark:text-[#e7c588]/80  hover:text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  transition-colors">
               {showConfirm ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
-          {errors.confirmPassword && <p className="text-red-600 dark:text-red-400 text-xs mt-1.5">{errors.confirmPassword}</p>}
+          {errors.confirmPassword && <p className="text-[#e7c588] text-xs mt-1.5">{errors.confirmPassword}</p>}
         </div>
 
         <div className="flex items-start gap-3 animate-tilt-in" style={{ animationDelay: '0.25s' }}>
@@ -150,23 +150,23 @@ const RegisterForm = () => {
             type="button"
             onClick={() => { setAgreeTerms(!agreeTerms); if (errors.terms) setErrors({ ...errors, terms: '' }); }}
             className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all ${
-              agreeTerms ? 'bg-blue-600 dark:bg-orange-500 border-blue-600 dark:border-orange-500' : 'border-gray-300 dark:border-white/20 hover:border-blue-500 dark:hover:border-orange-500/50'
+              agreeTerms ? 'bg-primary-400 border-[#e7c588]/40' : 'border-[#e7c588]/25 hover:border-primary-400:border-primary-400/50'
             }`}
           >
-            {agreeTerms && <FaCheck className="text-white text-[10px]" />}
+            {agreeTerms && <FaCheck className="text-[#f9f0d7] text-[10px]" />}
           </button>
-          <label htmlFor="terms" className="text-sm text-gray-500 dark:text-gray-400 cursor-pointer">
+          <label htmlFor="terms" className="text-sm text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  cursor-pointer">
             I agree to the{' '}
-            <Link to="/terms" className="text-blue-600 dark:text-orange-400 hover:text-blue-700 dark:hover:text-orange-300">Terms & Conditions</Link>
+            <Link to="/terms" className="text-primary-400 hover:text-[#f3e0ae] dark:text-[#e7c588]/80 ">Terms & Conditions</Link>
             {' '}and{' '}
-            <Link to="/privacy" className="text-blue-600 dark:text-orange-400 hover:text-blue-700 dark:hover:text-orange-300">Privacy Policy</Link>
+            <Link to="/privacy" className="text-primary-400 hover:text-[#f3e0ae] dark:text-[#e7c588]/80 ">Privacy Policy</Link>
           </label>
         </div>
-        {errors.terms && <p className="text-red-600 dark:text-red-400 text-xs -mt-2 ml-8">{errors.terms}</p>}
+        {errors.terms && <p className="text-[#e7c588] text-xs -mt-2 ml-8">{errors.terms}</p>}
 
         <button
           type="submit" disabled={loading}
-          className="w-full py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 dark:from-orange-500 dark:to-orange-600 hover:from-blue-700 hover:to-blue-800 dark:hover:from-orange-600 dark:hover:to-orange-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-blue-500/25 dark:shadow-orange-500/25 hover:shadow-blue-500/40 dark:hover:shadow-orange-500/40 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed animate-tilt-in"
+          className="w-full py-3.5 bg-primary-500 hover:bg-primary-600:bg-primary-500 text-[#f9f0d7] font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-primary-400/25/25 hover:shadow-primary-400/40:shadow-primary-400/40 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed animate-tilt-in"
           style={{ animationDelay: '0.3s' }}
         >
           {loading ? <FaSpinner className="animate-spin" /> : null}
@@ -175,9 +175,9 @@ const RegisterForm = () => {
         </button>
       </form>
 
-      <p className="text-center text-sm text-gray-500 dark:text-gray-500 mt-6">
+      <p className="text-center text-sm text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  mt-6">
         Already have an account?{' '}
-        <Link to="/login" className="text-blue-600 dark:text-orange-400 hover:text-blue-700 dark:hover:text-orange-300 font-semibold transition-colors">
+        <Link to="/login" className="text-primary-400 hover:text-[#f3e0ae] dark:text-[#e7c588]/80  font-semibold transition-colors">
           Sign In
         </Link>
       </p>

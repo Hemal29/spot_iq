@@ -59,8 +59,8 @@ const ImageUpload = ({ images = [], onUpload, onRemove, multiple = true, maxFile
         onClick={handleClick}
         className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors ${
           dragging
-            ? 'border-blue-500 bg-blue-50'
-            : 'border-gray-300 hover:border-blue-400 hover:bg-gray-50'
+            ? 'border-primary-400 bg-gray-50'
+            : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
         }`}
       >
         <input
@@ -73,7 +73,7 @@ const ImageUpload = ({ images = [], onUpload, onRemove, multiple = true, maxFile
         />
         {uploading ? (
           <div className="flex flex-col items-center gap-2">
-            <FaSpinner className="text-3xl text-blue-500 animate-spin" />
+            <FaSpinner className="text-3xl text-gray-500 dark:text-gray-400 dark:text-gray-500 animate-spin" />
             <p className="text-sm text-gray-500">Uploading...</p>
           </div>
         ) : (

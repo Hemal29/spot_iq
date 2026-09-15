@@ -1,16 +1,46 @@
 import { useState, useEffect, useMemo } from 'react';
-import adminService from '../services/adminService';
+import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
-import { FaBuilding, FaUsers, FaUserCheck, FaClock, FaRupeeSign, FaCheck, FaTimes, FaSearch, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import {
+  FaBuilding, FaUsers, FaUserCheck, FaClock, FaRupeeSign,
+  FaCheck, FaTimes, FaSearch, FaEye, FaTimesCircle,
+  FaPhone, FaEnvelope, FaIdCard, FaPercentage, FaParking,
+  FaUniversity, FaFileInvoice, FaExclamationTriangle, FaSyncAlt,
+} from 'react-icons/fa';
+import adminService from '../services/adminService';
+import PageHeader from '../components/common/PageHeader';
+import DataTable from '../components/common/DataTable';
+import Modal from '../components/common/Modal';
+import ConfirmDialog from '../components/common/ConfirmDialog';
 
-const ITEMS_PER_PAGE = 10;
+const statusFilters = [
+  { key: 'all', label: 'All' },
+  { key: 'approved', label: 'Approved' },
+  { key: 'pending', label: 'Pending' },
+  { key: 'rejected', label: 'Rejected' },
+];
+
+const statusStyles = {
+  approved: 'bg-gray-100 dark:bg-gray-800 text-gray-600/20 border border-gray-200/30',
+  pending: 'bg-gray-100 dark:bg-gray-800 text-gray-600/20 border border-gray-200/30',
+  rejected: 'bg-red-100 text-red-700/20 border border-red-200/30',
+};
+
+const formatCurrency = (v) =>
+  new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    maximumFractionDigits: 0,
+  }).format(v || 0);
 
 export default function OwnerManagementPage() {
   const [owners, setOwners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState('all');
   const [confirmAction, setConfirmAction] = useState(null);
+  const [viewOwner, setViewOwner] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetchOwners();
@@ -20,463 +50,411 @@ export default function OwnerManagementPage() {
     setLoading(true);
     try {
       const res = await adminService.getOwners();
-      setOwners(res.data || []);
+      const raw = res.data?.data || res.data || [];
+      const ownersList = (Array.isArray(raw) ? raw : []).map((o) => ({
+        ...o,
+        name: o.name || o.userName || 'N/A',
+        email: o.email || o.userEmail || '',
+        phone: o.phone || o.userPhone || '',
+        status: o.isApproved ? 'approved' : 'pending',
+      }));
+      setOwners(ownersList);
     } catch (err) {
-      console.error('Failed to load owners:', err);
       toast.error('Failed to load owners');
     } finally {
       setLoading(false);
     }
   };
 
+  const stats = useMemo(() => ({
+    total: owners.length,
+    approved: owners.filter((o) => o.status === 'approved').length,
+    pending: owners.filter((o) => o.status === 'pending').length,
+    totalEarnings: owners.reduce((sum, o) => sum + Number(o.totalEarnings || 0), 0),
+  }), [owners]);
+
+  const filtered = useMemo(() => owners.filter((o) => {
+    if (statusFilter !== 'all' && o.status !== statusFilter) return false;
+    if (!search) return true;
+    const q = search.toLowerCase();
+    return (
+      o.name?.toLowerCase().includes(q) ||
+      o.companyName?.toLowerCase().includes(q) ||
+      o.company?.toLowerCase().includes(q) ||
+      o.email?.toLowerCase().includes(q) ||
+      o.gstNumber?.toLowerCase().includes(q) ||
+      o.gst?.toLowerCase().includes(q)
+    );
+  }), [owners, search, statusFilter]);
+
   const handleApprove = async (ownerId) => {
+    setSaving(true);
     try {
       await adminService.approveOwner(ownerId);
-      setOwners((prev) =>
-        prev.map((o) => (o._id === ownerId ? { ...o, status: 'approved' } : o))
-      );
+      setOwners((prev) => prev.map((o) => (o.id === ownerId ? { ...o, status: 'approved' } : o)));
       toast.success('Owner approved successfully');
     } catch (err) {
-      console.error('Approve failed:', err);
       toast.error('Failed to approve owner');
     } finally {
+      setSaving(false);
       setConfirmAction(null);
     }
   };
 
   const handleReject = async (ownerId) => {
+    setSaving(true);
     try {
       await adminService.rejectOwner(ownerId);
-      setOwners((prev) =>
-        prev.map((o) => (o._id === ownerId ? { ...o, status: 'rejected' } : o))
-      );
+      setOwners((prev) => prev.map((o) => (o.id === ownerId ? { ...o, status: 'rejected' } : o)));
       toast.success('Owner rejected');
     } catch (err) {
-      console.error('Reject failed:', err);
       toast.error('Failed to reject owner');
     } finally {
+      setSaving(false);
       setConfirmAction(null);
     }
   };
 
-  const filteredOwners = useMemo(() => {
-    if (!search) return owners;
-    const q = search.toLowerCase();
-    return owners.filter(
-      (o) =>
-        o.name?.toLowerCase().includes(q) ||
-        o.email?.toLowerCase().includes(q) ||
-        o.company?.toLowerCase().includes(q)
-    );
-  }, [owners, search]);
+  const statCards = [
+    { label: 'Total Owners', value: stats.total, icon: FaUsers, gradient: 'bg-primary-600' },
+    { label: 'Approved', value: stats.approved, icon: FaUserCheck, gradient: 'bg-primary-400' },
+    { label: 'Pending', value: stats.pending, icon: FaClock, gradient: 'bg-primary-600' },
+    { label: 'Total Earnings', value: formatCurrency(stats.totalEarnings), icon: FaRupeeSign, gradient: 'from-purple-500 to-purple-600', isText: true },
+  ];
 
-  const totalPages = Math.ceil(filteredOwners.length / ITEMS_PER_PAGE);
-  const paginatedOwners = filteredOwners.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-
-  const stats = useMemo(() => {
-    const total = owners.length;
-    const approved = owners.filter((o) => o.status === 'approved').length;
-    const pending = owners.filter((o) => o.status === 'pending').length;
-    const totalEarnings = owners.reduce(
-      (sum, o) => sum + (o.totalEarnings || 0),
-      0
-    );
-    return { total, approved, pending, totalEarnings };
-  }, [owners]);
-
-  const formatCurrency = (v) =>
-    new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0,
-    }).format(v || 0);
-
-  const getStatusBadge = (status) => {
-    const styles = {
-      approved: 'bg-green-500/20 text-green-400 border-green-500/30',
-      pending: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-      rejected: 'bg-red-500/20 text-red-400 border-red-500/30',
-    };
-    return (
-      <span
-        className={`inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full border ${
-          styles[status] || 'bg-gray-500/20 text-gray-400 border-gray-500/30'
-        }`}
-      >
-        {status === 'approved' && <FaCheck className="mr-1 text-[10px]" />}
-        {status === 'pending' && <FaClock className="mr-1 text-[10px]" />}
-        {status === 'rejected' && <FaTimes className="mr-1 text-[10px]" />}
-        {status?.charAt(0).toUpperCase() + status?.slice(1)}
-      </span>
-    );
-  };
-
-  const renderConfirmModal = () => {
-    if (!confirmAction) return null;
-    const { type, owner } = confirmAction;
-    const isApprove = type === 'approve';
-
-    return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <div
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-          onClick={() => setConfirmAction(null)}
-        />
-        <div className="relative w-full max-w-md bg-[#1E293B] border border-white/10 rounded-2xl shadow-2xl p-6 animate-slideUp">
-          <div className="flex flex-col items-center text-center">
-            <div
-              className={`w-14 h-14 rounded-full flex items-center justify-center mb-4 ${
-                isApprove ? 'bg-green-500/20' : 'bg-red-500/20'
-              }`}
-            >
-              {isApprove ? (
-                <FaCheck className="text-2xl text-green-400" />
-              ) : (
-                <FaTimes className="text-2xl text-red-400" />
-              )}
+  const columns = [
+    {
+      key: 'companyName',
+      label: 'Company',
+      render: (v, row) => {
+        const name = row.companyName || row.company || '-';
+        return (
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-400 to-primary-400 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+              {name[0]?.toUpperCase() || 'C'}
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2">
-              {isApprove ? 'Approve Owner' : 'Reject Owner'}
-            </h3>
-            <p className="text-sm text-gray-400 mb-6">
-              Are you sure you want to {isApprove ? 'approve' : 'reject'}{' '}
-              <span className="text-white font-medium">{owner.name}</span>?
-            </p>
-            <div className="flex gap-3 w-full">
-              <button
-                onClick={() => setConfirmAction(null)}
-                className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-300 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() =>
-                  isApprove ? handleApprove(owner._id) : handleReject(owner._id)
-                }
-                className={`flex-1 px-4 py-2.5 text-sm font-medium text-white rounded-xl transition ${
-                  isApprove
-                    ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700'
-                    : 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700'
-                }`}
-              >
-                {isApprove ? 'Approve' : 'Reject'}
-              </button>
-            </div>
+            <p className="text-sm font-semibold text-gray-900 dark:text-gray-100  truncate max-w-[140px]">{name}</p>
           </div>
-        </div>
-      </div>
-    );
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-[#0F172A] p-6">
-        <div className="flex items-center justify-center h-64">
-          <svg
-            className="animate-spin h-10 w-10 text-orange-500"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
+        );
+      },
+    },
+    {
+      key: 'user',
+      label: 'User',
+      render: (v, row) => {
+        const name = row.userName || row.user?.name || row.name || '-';
+        const email = row.userEmail || row.user?.email || row.email || '';
+        const phone = row.userPhone || row.user?.phone || row.phone || '';
+        return (
+          <div>
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 ">{name}</p>
+            {email && <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 ">{email}</p>}
+            {phone && <p className="text-xs text-gray-400 dark:text-gray-500 ">{phone}</p>}
+          </div>
+        );
+      },
+    },
+    {
+      key: 'gstNumber',
+      label: 'GST Number',
+      render: (v, row) => (
+        <span className="text-sm text-gray-700 dark:text-gray-300  font-mono">
+          {row.gstNumber || row.gst || '-'}
+        </span>
+      ),
+    },
+    {
+      key: 'parkingCount',
+      label: 'Parking',
+      render: (v, row) => {
+        const count = row.parkingCount ?? row.parkings?.length ?? row.totalParkings ?? 0;
+        return (
+          <div className="flex items-center gap-1.5">
+            <FaParking className="text-gray-400 dark:text-gray-500  text-[10px]" />
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-100 ">{count}</span>
+          </div>
+        );
+      },
+    },
+    {
+      key: 'commissionRate',
+      label: 'Commission',
+      render: (v, row) => (
+        <span className="text-sm text-gray-700 dark:text-gray-300 ">
+          {row.commissionRate != null ? `${row.commissionRate}%` : '-'}
+        </span>
+      ),
+    },
+    {
+      key: 'totalEarnings',
+      label: 'Earnings',
+      render: (v, row) => (
+        <span className="text-sm font-semibold text-gray-900 dark:text-gray-100 ">
+          {formatCurrency(row.totalEarnings)}
+        </span>
+      ),
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      render: (v, row) => (
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize ${statusStyles[v] || statusStyles.pending}`}>
+          {v === 'approved' && <FaCheck className="mr-1 text-[10px]" />}
+          {v === 'pending' && <FaClock className="mr-1 text-[10px]" />}
+          {v === 'rejected' && <FaTimesCircle className="mr-1 text-[10px]" />}
+          {v || 'pending'}
+        </span>
+      ),
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      sortable: false,
+      render: (v, row) => (
+        <div className="flex items-center gap-1">
+          <button
+            onClick={(e) => { e.stopPropagation(); setViewOwner(row); }}
+            className="p-1.5 text-gray-500 dark:text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800  rounded-lg transition-colors"
+            title="View Details"
           >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            />
-          </svg>
-        </div>
-      </div>
-    );
-  }
-
-  const pageNumbers = [];
-  const maxVisible = 5;
-  let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-  let end = Math.min(totalPages, start + maxVisible - 1);
-  if (end - start + 1 < maxVisible) {
-    start = Math.max(1, end - maxVisible + 1);
-  }
-  for (let i = start; i <= end; i++) {
-    pageNumbers.push(i);
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0F172A] p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Owner Management
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Manage parking owners and their approvals
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl p-5 text-white shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-blue-100 text-xs font-medium uppercase tracking-wider">
-                  Total Owners
-                </p>
-                <p className="text-3xl font-bold mt-1">{stats.total}</p>
-              </div>
-              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                <FaUsers className="text-xl" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-5 text-white shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-green-100 text-xs font-medium uppercase tracking-wider">
-                  Approved
-                </p>
-                <p className="text-3xl font-bold mt-1">{stats.approved}</p>
-              </div>
-              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                <FaUserCheck className="text-xl" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl p-5 text-white shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-orange-100 text-xs font-medium uppercase tracking-wider">
-                  Pending Approval
-                </p>
-                <p className="text-3xl font-bold mt-1">{stats.pending}</p>
-              </div>
-              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                <FaClock className="text-xl" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl p-5 text-white shadow-lg">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-purple-100 text-xs font-medium uppercase tracking-wider">
-                  Total Earnings
-                </p>
-                <p className="text-3xl font-bold mt-1">
-                  {formatCurrency(stats.totalEarnings)}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                <FaRupeeSign className="text-xl" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-gray-200 dark:border-white/10 shadow-sm overflow-hidden">
-          <div className="p-4 border-b border-gray-200 dark:border-white/10">
-            <div className="relative">
-              <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm" />
-              <input
-                type="text"
-                placeholder="Search by name, email, or company..."
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full max-w-md pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition"
-              />
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-200 dark:border-white/10">
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Name / Email
-                  </th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Company
-                  </th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Phone
-                  </th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    GST
-                  </th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Commission
-                  </th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Earnings
-                  </th>
-                  <th className="text-left px-4 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="text-right px-4 py-3.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-white/5">
-                {paginatedOwners.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={8}
-                      className="px-4 py-12 text-center text-gray-400"
-                    >
-                      <div className="flex flex-col items-center gap-2">
-                        <FaBuilding className="text-3xl text-gray-300 dark:text-gray-600" />
-                        <p className="text-sm">
-                          {search
-                            ? 'No owners match your search'
-                            : 'No owners found'}
-                        </p>
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  paginatedOwners.map((owner) => (
-                    <tr
-                      key={owner._id}
-                      className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors"
-                    >
-                      <td className="px-4 py-3.5">
-                        <div>
-                          <p className="text-sm font-medium text-gray-900 dark:text-white">
-                            {owner.name || 'N/A'}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                            {owner.email || ''}
-                          </p>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300">
-                        {owner.company || '-'}
-                      </td>
-                      <td className="px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300">
-                        {owner.phone || '-'}
-                      </td>
-                      <td className="px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300">
-                        {owner.gst || '-'}
-                      </td>
-                      <td className="px-4 py-3.5 text-sm text-gray-700 dark:text-gray-300">
-                        {owner.commissionRate != null
-                          ? `${owner.commissionRate}%`
-                          : '-'}
-                      </td>
-                      <td className="px-4 py-3.5 text-sm font-medium text-gray-900 dark:text-white">
-                        {formatCurrency(owner.totalEarnings)}
-                      </td>
-                      <td className="px-4 py-3.5">
-                        {getStatusBadge(owner.status)}
-                      </td>
-                      <td className="px-4 py-3.5 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          {owner.status === 'pending' && (
-                            <>
-                              <button
-                                onClick={() =>
-                                  setConfirmAction({
-                                    type: 'approve',
-                                    owner,
-                                  })
-                                }
-                                className="px-3 py-1.5 text-xs font-medium text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-lg transition shadow-sm"
-                              >
-                                Approve
-                              </button>
-                              <button
-                                onClick={() =>
-                                  setConfirmAction({
-                                    type: 'reject',
-                                    owner,
-                                  })
-                                }
-                                className="px-3 py-1.5 text-xs font-medium text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg transition shadow-sm"
-                              >
-                                Reject
-                              </button>
-                            </>
-                          )}
-                          {owner.status === 'approved' && (
-                            <span className="text-xs text-gray-400 dark:text-gray-500 italic">
-                              Approved
-                            </span>
-                          )}
-                          {owner.status === 'rejected' && (
-                            <span className="text-xs text-gray-400 dark:text-gray-500 italic">
-                              Rejected
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-
-          {totalPages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-white/10 bg-gray-50/50 dark:bg-white/[0.02]">
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}-
-                {Math.min(
-                  currentPage * ITEMS_PER_PAGE,
-                  filteredOwners.length
-                )}{' '}
-                of {filteredOwners.length}
-              </div>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition"
-                >
-                  <FaChevronLeft className="text-xs" />
-                </button>
-                {pageNumbers.map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => setCurrentPage(page)}
-                    className={`w-8 h-8 text-sm rounded-lg transition ${
-                      page === currentPage
-                        ? 'bg-orange-500 text-white'
-                        : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10'
-                    }`}
-                  >
-                    {page}
-                  </button>
-                ))}
-                <button
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(totalPages, p + 1))
-                  }
-                  disabled={currentPage === totalPages}
-                  className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition"
-                >
-                  <FaChevronRight className="text-xs" />
-                </button>
-              </div>
-            </div>
+            <FaEye className="text-xs" />
+          </button>
+          {row.status === 'pending' && (
+            <>
+              <button
+                onClick={(e) => { e.stopPropagation(); setConfirmAction({ type: 'approve', owner: row }); }}
+                className="p-1.5 text-primary-400 hover:bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-800  rounded-lg transition-colors"
+                title="Approve"
+              >
+                <FaCheck className="text-xs" />
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); setConfirmAction({ type: 'reject', owner: row }); }}
+                className="p-1.5 text-red-500 hover:bg-red-50  rounded-lg transition-colors"
+                title="Reject"
+              >
+                <FaTimesCircle className="text-xs" />
+              </button>
+            </>
           )}
         </div>
+      ),
+    },
+  ];
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+      <PageHeader title="Parking Owners" subtitle="Manage parking owners and their approvals" />
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {statCards.map((card, idx) => (
+          <motion.div
+            key={card.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.05, duration: 0.4 }}
+            className="glass-card p-5 overflow-hidden relative group hover:shadow-md transition-shadow duration-200"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent[0.02]  pointer-events-none" />
+            <div className="relative z-10 flex items-center justify-between">
+              <div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500  font-medium uppercase tracking-wider">{card.label}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-gray-100  mt-1">
+                  {card.isText ? card.value : card.value}
+                </p>
+              </div>
+              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${card.gradient} flex items-center justify-center shadow-lg shadow-current/20`}>
+                <card.icon className="text-white text-lg" />
+              </div>
+            </div>
+          </motion.div>
+        ))}
       </div>
 
-      {renderConfirmModal()}
-    </div>
+      <div className="glass-card">
+        <div className="p-4 border-b border-gray-200 dark:border-gray-700 ">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div className="relative flex-1 min-w-[200px] max-w-md">
+              <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500  text-sm pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search by name, company, email, or GST..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="input-field pl-10"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              {statusFilters.map((sf) => (
+                <button
+                  key={sf.key}
+                  onClick={() => setStatusFilter(sf.key)}
+                  className={`px-3 py-2 text-xs font-medium rounded-lg transition-all ${
+                    statusFilter === sf.key
+                      ? 'bg-gray-500 text-white shadow-sm'
+                      : 'bg-gray-100 dark:bg-gray-800  text-gray-600 dark:text-gray-400 dark:text-gray-500  hover:bg-gray-200 dark:hover:bg-gray-700 dark:bg-gray-700 '
+                  }`}
+                >
+                  {sf.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <DataTable columns={columns} data={filtered} loading={loading} emptyMessage="No owners found" />
+      </div>
+
+      <ConfirmDialog
+        isOpen={!!confirmAction}
+        title={confirmAction?.type === 'approve' ? 'Approve Owner' : 'Reject Owner'}
+        message={
+          confirmAction?.type === 'approve'
+            ? `Are you sure you want to approve "${confirmAction?.owner?.companyName || confirmAction?.owner?.company || confirmAction?.owner?.name}"?`
+            : `Are you sure you want to reject "${confirmAction?.owner?.companyName || confirmAction?.owner?.company || confirmAction?.owner?.name}"? This action cannot be undone.`
+        }
+        confirmText={confirmAction?.type === 'approve' ? 'Approve' : 'Reject'}
+        cancelText="Cancel"
+        onConfirm={() => {
+          if (confirmAction?.type === 'approve') {
+            handleApprove(confirmAction.owner.id);
+          } else {
+            handleReject(confirmAction.owner.id);
+          }
+        }}
+        onCancel={() => setConfirmAction(null)}
+        variant={confirmAction?.type === 'approve' ? 'primary' : 'danger'}
+      />
+
+      <Modal isOpen={!!viewOwner} onClose={() => setViewOwner(null)} title="Owner Details" size="lg">
+        {viewOwner && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800  rounded-xl">
+              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary-400 to-primary-400 flex items-center justify-center text-white text-xl font-bold">
+                {(viewOwner.companyName || viewOwner.company || viewOwner.name || 'O')[0].toUpperCase()}
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 ">
+                  {viewOwner.companyName || viewOwner.company || 'No Company'}
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-500 ">
+                  {viewOwner.userName || viewOwner.user?.name || viewOwner.name || ''}
+                </p>
+                <div className="mt-1">
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize ${statusStyles[viewOwner.status] || statusStyles.pending}`}>
+                    {viewOwner.status || 'pending'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500  uppercase tracking-wider">Contact Information</h4>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-3 glass-card rounded-xl">
+                    <FaEnvelope className="text-gray-400 dark:text-gray-500  text-sm flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 ">Email</p>
+                      <p className="text-sm text-gray-900 dark:text-gray-100 ">{viewOwner.userEmail || viewOwner.user?.email || viewOwner.email || '-'}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 glass-card rounded-xl">
+                    <FaPhone className="text-gray-400 dark:text-gray-500  text-sm flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 ">Phone</p>
+                      <p className="text-sm text-gray-900 dark:text-gray-100 ">{viewOwner.userPhone || viewOwner.user?.phone || viewOwner.phone || '-'}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 glass-card rounded-xl">
+                    <FaIdCard className="text-gray-400 dark:text-gray-500  text-sm flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 ">GST Number</p>
+                      <p className="text-sm text-gray-900 dark:text-gray-100  font-mono">{viewOwner.gstNumber || viewOwner.gst || '-'}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 glass-card rounded-xl">
+                    <FaPercentage className="text-gray-400 dark:text-gray-500  text-sm flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 ">Commission Rate</p>
+                      <p className="text-sm text-gray-900 dark:text-gray-100 ">{viewOwner.commissionRate != null ? `${viewOwner.commissionRate}%` : '-'}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500  uppercase tracking-wider">Financial Details</h4>
+                <div className="space-y-3">
+                  <div className="p-4 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl text-white">
+                    <p className="text-xs text-primary-200 font-medium uppercase tracking-wider">Total Earnings</p>
+                    <p className="text-2xl font-bold mt-1">{formatCurrency(viewOwner.totalEarnings)}</p>
+                  </div>
+                  {viewOwner.bankDetails && (
+                    <div className="p-3 glass-card rounded-xl">
+                      <div className="flex items-center gap-2 mb-2">
+                        <FaUniversity className="text-gray-400 dark:text-gray-500  text-sm" />
+                        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 ">Bank Details</p>
+                      </div>
+                      <div className="space-y-1 text-sm text-gray-600 dark:text-gray-400 dark:text-gray-500 ">
+                        {viewOwner.bankDetails.bankName && <p>Bank: {viewOwner.bankDetails.bankName}</p>}
+                        {viewOwner.bankDetails.accountNumber && <p>Account: {viewOwner.bankDetails.accountNumber}</p>}
+                        {viewOwner.bankDetails.ifsc && <p>IFSC: {viewOwner.bankDetails.ifsc}</p>}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {viewOwner.parkings && viewOwner.parkings.length > 0 && (
+              <div>
+                <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400 dark:text-gray-500  uppercase tracking-wider mb-3">Parking Locations</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {viewOwner.parkings.map((parking, idx) => (
+                    <div key={parking.id || idx} className="p-3 glass-card rounded-xl flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br bg-primary-600 flex items-center justify-center flex-shrink-0">
+                        <FaParking className="text-white text-sm" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100  truncate">{parking.parkingName || parking.name || 'Parking'}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 dark:text-gray-500 ">{parking.city || parking.address || '-'}</p>
+                      </div>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${parking.status === 'active' ? 'bg-gray-100 dark:bg-gray-800 text-gray-600/20' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 dark:text-gray-500  '}`}>
+                        {parking.status || 'active'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="flex items-center gap-3 pt-4 border-t border-gray-200 dark:border-gray-700 ">
+              {viewOwner.status === 'pending' && (
+                <>
+                  <button
+                    onClick={() => { setViewOwner(null); setConfirmAction({ type: 'approve', owner: viewOwner }); }}
+                    className="btn-primary"
+                  >
+                    <FaCheck className="text-xs" />
+                    Approve Owner
+                  </button>
+                  <button
+                    onClick={() => { setViewOwner(null); setConfirmAction({ type: 'reject', owner: viewOwner }); }}
+                    className="btn-danger"
+                  >
+                    <FaTimesCircle className="text-xs" />
+                    Reject Owner
+                  </button>
+                </>
+              )}
+              <button onClick={() => setViewOwner(null)} className="btn-ghost ml-auto">
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
+    </motion.div>
   );
 }

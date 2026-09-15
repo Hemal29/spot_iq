@@ -89,7 +89,7 @@ const VehicleManager = () => {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl shadow-md p-6">
+      <div className="bg-[#0a0a0b] dark:bg-[#0a0a0b] rounded-xl shadow-md p-6">
         <div className="flex items-center justify-center py-8">
           <FaSpinner className="animate-spin text-primary-600 text-xl" />
         </div>
@@ -98,53 +98,53 @@ const VehicleManager = () => {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6">
+    <div className="bg-[#0a0a0b] dark:bg-[#0a0a0b] rounded-xl shadow-md p-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">My Vehicles</h3>
+        <h3 className="text-lg font-semibold text-[#f9f0d7]">My Vehicles</h3>
         {!showForm && (
-          <button onClick={() => setShowForm(true)} className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-1 transition">
+          <button onClick={() => setShowForm(true)} className="bg-primary-600 hover:bg-primary-700 text-[#f9f0d7] px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-1 transition">
             <FaPlus /> Add Vehicle
           </button>
         )}
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg mb-4 text-sm">{error}</div>
+        <div className="bg-[#e7c588] border border-[#e7c588]/40 text-[#e7c588] px-4 py-2 rounded-lg mb-4 text-sm">{error}</div>
       )}
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="bg-gray-50 rounded-xl p-4 mb-6 space-y-3">
+        <form onSubmit={handleSubmit} className="bg-[#0a0a0b] dark:bg-[#121214] rounded-xl p-4 mb-6 space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Vehicle Number *</label>
-              <input type="text" name="vehicleNumber" value={form.vehicleNumber} onChange={handleChange} placeholder="ABC 1234" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
+              <label className="block text-xs font-medium text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 mb-1">Vehicle Number *</label>
+              <input type="text" name="vehicleNumber" value={form.vehicleNumber} onChange={handleChange} placeholder="ABC 1234" className="w-full px-3 py-2 border border-[#e7c588]/25 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Vehicle Type *</label>
-              <select name="vehicleType" value={form.vehicleType} onChange={handleChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm bg-white">
+              <label className="block text-xs font-medium text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 mb-1">Vehicle Type *</label>
+              <select name="vehicleType" value={form.vehicleType} onChange={handleChange} className="w-full px-3 py-2 border border-[#e7c588]/25 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm bg-[#0a0a0b]">
                 <option value="">Select type</option>
                 {vehicleTypes.map((t) => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Brand *</label>
-              <input type="text" name="brand" value={form.brand} onChange={handleChange} placeholder="Toyota" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
+              <label className="block text-xs font-medium text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 mb-1">Brand *</label>
+              <input type="text" name="brand" value={form.brand} onChange={handleChange} placeholder="Toyota" className="w-full px-3 py-2 border border-[#e7c588]/25 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Model *</label>
-              <input type="text" name="model" value={form.model} onChange={handleChange} placeholder="Camry" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
+              <label className="block text-xs font-medium text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 mb-1">Model *</label>
+              <input type="text" name="model" value={form.model} onChange={handleChange} placeholder="Camry" className="w-full px-3 py-2 border border-[#e7c588]/25 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Color</label>
-              <input type="text" name="color" value={form.color} onChange={handleChange} placeholder="White" className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
+              <label className="block text-xs font-medium text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 mb-1">Color</label>
+              <input type="text" name="color" value={form.color} onChange={handleChange} placeholder="White" className="w-full px-3 py-2 border border-[#e7c588]/25 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none text-sm" />
             </div>
           </div>
           <div className="flex gap-2 pt-1">
-            <button type="submit" disabled={saving} className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-1 disabled:opacity-60 transition">
+            <button type="submit" disabled={saving} className="bg-primary-600 hover:bg-primary-700 text-[#f9f0d7] px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-1 disabled:opacity-60 transition">
               {saving ? <FaSpinner className="animate-spin" /> : null}
               {editingId ? 'Update' : 'Add'} Vehicle
             </button>
-            <button type="button" onClick={handleCancel} className="border border-gray-300 text-gray-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition">
+            <button type="button" onClick={handleCancel} className="border border-[#e7c588]/25 text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 px-4 py-2 rounded-lg text-sm font-medium hover:bg-[#0a0a0b] dark:hover:bg-[#121214] dark:bg-[#121214] transition">
               Cancel
             </button>
           </div>
@@ -153,13 +153,13 @@ const VehicleManager = () => {
 
       {vehicles.length === 0 && !showForm ? (
         <div className="text-center py-8">
-          <FaCar className="text-gray-300 text-4xl mx-auto mb-3" />
-          <p className="text-gray-500 text-sm">No vehicles added yet</p>
+          <FaCar className="text-[#e7c588]/80 text-4xl mx-auto mb-3" />
+          <p className="text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 text-sm">No vehicles added yet</p>
         </div>
       ) : (
         <div className="space-y-3">
           {vehicles.map((v) => (
-            <div key={v._id} className={`border rounded-xl p-4 transition ${v.isDefault ? 'border-primary-300 bg-primary-50' : 'border-gray-200 hover:border-gray-300'}`}>
+            <div key={v._id} className={`border rounded-xl p-4 transition ${v.isDefault ? 'border-primary-300 bg-primary-50' : 'border-[#e7c588]/25 dark:border-[#e7c588]/25 hover:border-[#e7c588]/25'}`}>
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center shrink-0">
@@ -167,28 +167,28 @@ const VehicleManager = () => {
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <p className="font-semibold text-gray-800 text-sm">{v.vehicleNumber}</p>
+                      <p className="font-semibold text-[#f9f0d7] text-sm">{v.vehicleNumber}</p>
                       {v.isDefault && (
                         <span className="bg-primary-100 text-primary-700 text-xs px-2 py-0.5 rounded-full font-medium">Default</span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-500 mt-0.5">{v.brand} {v.model}</p>
+                    <p className="text-xs text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 mt-0.5">{v.brand} {v.model}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded">{v.vehicleType}</span>
-                      {v.color && <span className="text-xs text-gray-400">{v.color}</span>}
+                      <span className="text-xs bg-[#121214] dark:bg-[#121214] text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80 px-2 py-0.5 rounded">{v.vehicleType}</span>
+                      {v.color && <span className="text-xs text-[#e7c588]/80">{v.color}</span>}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
                   {!v.isDefault && (
-                    <button onClick={() => handleSetDefault(v._id)} className="p-2 text-gray-400 hover:text-yellow-500 transition" title="Set as default">
+                    <button onClick={() => handleSetDefault(v._id)} className="p-2 text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:text-primary-400 transition" title="Set as default">
                       <FaStar />
                     </button>
                   )}
-                  <button onClick={() => handleEdit(v)} className="p-2 text-gray-400 hover:text-primary-600 transition" title="Edit">
+                  <button onClick={() => handleEdit(v)} className="p-2 text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:text-primary-600 transition" title="Edit">
                     <FaEdit />
                   </button>
-                  <button onClick={() => handleDelete(v._id)} className="p-2 text-gray-400 hover:text-red-500 transition" title="Delete">
+                  <button onClick={() => handleDelete(v._id)} className="p-2 text-[#e7c588]/80 dark:text-[#e7c588]/80 hover:text-[#e7c588] transition" title="Delete">
                     <FaTrash />
                   </button>
                 </div>

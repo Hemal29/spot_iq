@@ -3,68 +3,167 @@
 @tailwind utilities;
 
 @layer base {
-  body {
-    font-family: 'Inter', system-ui, sans-serif;
-    @apply bg-gray-50 text-gray-900 antialiased;
-  }
-
   html {
     scroll-behavior: smooth;
   }
 
-  ::-webkit-scrollbar {
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    @apply antialiased bg-white;
+  }
+
+  .dark body {
+    @apply bg-gray-900;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.3) transparent;
+  }
+
+  *::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
 
-  ::-webkit-scrollbar-track {
-    @apply bg-gray-100;
+  *::-webkit-scrollbar-track {
+    background: transparent;
   }
 
-  ::-webkit-scrollbar-thumb {
+  *::-webkit-scrollbar-thumb {
     @apply bg-gray-300 rounded-full;
   }
 
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400;
+  .dark *::-webkit-scrollbar-thumb {
+    @apply bg-gray-600;
   }
 }
 
 @layer components {
+  .glass-card {
+    @apply bg-white rounded-2xl border border-gray-100 shadow-sm;
+  }
+  .dark .glass-card {
+    @apply bg-gray-800 border-gray-700;
+  }
+
   .sidebar-link {
-    @apply flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-300 rounded-lg transition-colors duration-200 hover:bg-sidebar-hover hover:text-white;
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200;
+  }
+
+  .sidebar-link:hover {
+    @apply bg-gray-50;
+  }
+  .dark .sidebar-link:hover {
+    @apply bg-gray-700/50;
   }
 
   .sidebar-link.active {
-    @apply bg-blue-600/20 text-blue-400 border-r-2 border-blue-500;
+    @apply bg-primary-50 text-primary-400;
   }
-
-  .data-table {
-    @apply w-full text-left;
-  }
-
-  .data-table th {
-    @apply px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50 border-b border-gray-200;
-  }
-
-  .data-table td {
-    @apply px-4 py-3 text-sm text-gray-700 border-b border-gray-100;
-  }
-
-  .data-table tr:hover td {
-    @apply bg-blue-50/50;
+  .dark .sidebar-link.active {
+    @apply bg-primary-900/30 text-primary-300;
   }
 
   .admin-card {
-    @apply bg-white rounded-xl border border-gray-200 shadow-sm;
+    @apply bg-white rounded-2xl border border-gray-100 shadow-sm;
+  }
+  .dark .admin-card {
+    @apply bg-gray-800 border-gray-700;
   }
 
   .admin-input {
-    @apply w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors;
+    @apply w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-400/50 focus:border-primary-400 transition-all;
+  }
+  .dark .admin-input {
+    @apply bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400;
   }
 
   .admin-select {
-    @apply w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition-colors;
+    @apply px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-400/50 focus:border-primary-400 transition-all;
+  }
+  .dark .admin-select {
+    @apply bg-gray-700 border-gray-600 text-gray-100;
+  }
+
+  .data-table {
+    @apply w-full text-sm text-left;
+  }
+
+  .data-table thead {
+    @apply bg-gray-50;
+  }
+  .dark .data-table thead {
+    @apply bg-gray-700/50;
+  }
+
+  .data-table th {
+    @apply px-4 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500 border-b border-gray-200;
+  }
+  .dark .data-table th {
+    @apply text-gray-400 border-gray-700;
+  }
+
+  .data-table td {
+    @apply px-4 py-3 text-gray-700 border-b border-gray-100;
+  }
+  .dark .data-table td {
+    @apply text-gray-300 border-gray-700/50;
+  }
+
+  .data-table tbody tr {
+    @apply hover:bg-primary-50/50 transition-colors;
+  }
+  .dark .data-table tbody tr {
+    @apply hover:bg-gray-700/50;
+  }
+
+  .data-table tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary-400 hover:bg-primary-500 text-white text-sm font-semibold rounded-xl shadow-sm transition-all duration-200;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary-300 hover:bg-primary-400 text-white text-sm font-semibold rounded-xl shadow-sm transition-all duration-200;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-all duration-200;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 border-2 border-gray-300 text-gray-700 hover:bg-gray-50 text-sm font-semibold rounded-xl transition-all duration-200;
+  }
+  .dark .btn-outline {
+    @apply border-gray-600 text-gray-300 hover:bg-gray-700;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-gray-600 hover:bg-gray-50 text-sm font-medium rounded-xl transition-all duration-200;
+  }
+  .dark .btn-ghost {
+    @apply text-gray-400 hover:bg-gray-700;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 focus:border-primary-400 transition-all;
+  }
+  .dark .input-field {
+    @apply bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400;
+  }
+
+  .select-field {
+    @apply w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 focus:border-primary-400 transition-all appearance-none cursor-pointer;
+  }
+  .dark .select-field {
+    @apply bg-gray-700 border-gray-600 text-gray-100;
+  }
+
+  .chart-tooltip {
+    @apply rounded-xl border-0 shadow-xl;
   }
 }
 
@@ -72,8 +171,12 @@
   .animation-delay-100 { animation-delay: 100ms; }
   .animation-delay-200 { animation-delay: 200ms; }
   .animation-delay-300 { animation-delay: 300ms; }
+  .animation-delay-400 { animation-delay: 400ms; }
   .animation-delay-500 { animation-delay: 500ms; }
+  .animation-delay-600 { animation-delay: 600ms; }
   .animation-delay-700 { animation-delay: 700ms; }
+  .animation-delay-800 { animation-delay: 800ms; }
+  .animation-delay-900 { animation-delay: 900ms; }
   .animation-delay-1000 { animation-delay: 1000ms; }
 }
 
@@ -83,21 +186,33 @@
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-20px); }
-  to { opacity: 1; transform: translateX(0); }
+  from { transform: translateX(-20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
 .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
-.animate-slideUp { animation: slideUp 0.4s ease-out; }
-.animate-slideDown { animation: slideDown 0.4s ease-out; }
+.animate-slideUp { animation: slideUp 0.3s ease-out; }
+.animate-slideDown { animation: slideDown 0.3s ease-out; }
 .animate-slideInLeft { animation: slideInLeft 0.3s ease-out; }
+.animate-scaleIn { animation: scaleIn 0.2s ease-out; }
+
+@media print {
+  .no-print { display: none !important; }
+  body { background: white !important; }
+  .admin-card { box-shadow: none !important; border: 1px solid #e5e7eb !important; }
+}
