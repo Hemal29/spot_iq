@@ -15,13 +15,13 @@ const navLinks = [
   { path: '/', label: 'Home' },
   { path: '/find-parking', label: 'Find Parking' },
   { path: '/my-bookings', label: 'My Bookings' },
-  { path: '/find-parking', label: 'AI Insights', isPlaceholder: true },
-  { path: '/find-parking', label: 'Saved Parking', isPlaceholder: true },
-  { path: '/find-parking', label: 'EV Charging', isPlaceholder: true },
-  { path: '/find-parking', label: 'Monthly Passes', isPlaceholder: true },
-  { path: '/my-bookings', label: 'Wallet', isPlaceholder: true },
-  { path: '/my-bookings', label: 'Rewards', isPlaceholder: true },
-  { path: '/contact', label: 'Support' },
+  { path: '/recommendations', label: 'AI Insights' },
+  { path: '/saved-parking', label: 'Saved Parking' },
+  { path: '/find-parking?quick=ev', label: 'EV Charging' },
+  { path: '/monthly-passes', label: 'Monthly Passes' },
+  { path: '/wallet', label: 'Wallet' },
+  { path: '/rewards', label: 'Rewards' },
+  { path: '/support', label: 'Support' },
   { path: '/contact', label: 'Contact' },
 ];
 
@@ -275,9 +275,9 @@ const Navbar = () => {
   };
 
   const isLinkActive = (link) => {
-    if (link.isPlaceholder) return false;
-    if (link.path === '/') return location.pathname === '/';
-    return location.pathname.startsWith(link.path);
+    const base = link.path.split('?')[0];
+    if (base === '/') return location.pathname === '/';
+    return location.pathname === base || location.pathname.startsWith(`${base}/`);
   };
 
   const activeLabel = navLinks.find((l) => isLinkActive(l))?.label;
@@ -326,12 +326,9 @@ const Navbar = () => {
                     to={link.path}
                     className={`relative shrink-0 px-3 py-2 text-[13px] font-medium transition-colors duration-200 whitespace-nowrap ${
                       active
-                        ? 'text-primary-400'
-                        : 'text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  hover:text-[#f9f0d7] dark:text-[#f9f0d7] '
+                        ? 'text-[#e7c588]'
+                        : 'text-[#f9f0d7]/60 hover:text-[#f9f0d7]'
                     }`}
-                    onClick={(e) => {
-                      if (link.isPlaceholder) e.preventDefault();
-                    }}
                   >
                     <span>{link.label}</span>
                     {active && (
@@ -761,9 +758,9 @@ const Navbar = () => {
                           <NavLink
                             to={link.path}
                             className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all ${
-                              active ? 'text-primary-400 bg-[#0a0a0b]/10' : 'text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  hover:text-[#f9f0d7] dark:text-[#f9f0d7]  hover:bg-[#121214] dark:hover:bg-[#1c1c1f]/50 dark:bg-[#121214] '
+                              active ? 'text-[#e7c588] bg-[#e7c588]/10' : 'text-[#f9f0d7]/70 hover:text-[#f9f0d7] hover:bg-white/5'
                             }`}
-                            onClick={(e) => { if (link.isPlaceholder) e.preventDefault(); setMobileOpen(false); }}
+                            onClick={() => setMobileOpen(false)}
                           >
                             <span>{link.label}</span>
                             <FaChevronRight className="text-[10px] text-[#e7c588]/80" />

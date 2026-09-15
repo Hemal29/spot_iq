@@ -236,9 +236,18 @@ const FindParkingPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
-  const [sortBy, setSortBy] = useState('distance');
-  const [filterBy, setFilterBy] = useState('all');
-  const [activeQuickFilter, setActiveQuickFilter] = useState(null);
+  const [sortBy, setSortBy] = useState(() => {
+    const q = QUICK_FILTERS.find((f) => f.key === searchParams.get('quick'));
+    return q?.sort || 'distance';
+  });
+  const [filterBy, setFilterBy] = useState(() => {
+    const q = QUICK_FILTERS.find((f) => f.key === searchParams.get('quick'));
+    return q?.filter || 'all';
+  });
+  const [activeQuickFilter, setActiveQuickFilter] = useState(() => {
+    const q = searchParams.get('quick');
+    return QUICK_FILTERS.some((f) => f.key === q) ? q : null;
+  });
   const [viewMode, setViewMode] = useState('grid');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -378,7 +387,7 @@ const FindParkingPage = () => {
     <PageTransition>
       <div className="min-h-screen bg-[#0a0a0b]">
         <PageHero
-          badge={<><FaParking className="text-[#e7c588]" /> 200+ Ahmedabad locations</>}
+          badge={<><FaParking className="text-[#e7c588]" /> Ahmedabad locations</>}
           title="Find"
           highlight="Parking"
           subtitle="Discover the best parking spots near you — live availability across Ahmedabad"

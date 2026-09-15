@@ -53,7 +53,7 @@ const Testimonials = () => {
             What Ahmedabad Says
           </h2>
           <p className="text-[#e7c588]/80 dark:text-[#e7c588]/80 dark:text-[#e7c588]/80  text-lg">
-            Hear from thousands of satisfied drivers across the city.
+            Hear from drivers across the city.
           </p>
         </div>
 

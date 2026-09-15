@@ -43,7 +43,7 @@ const CTASection = () => {
           </h2>
 
           <p className="text-lg text-[#f9f0d7]/70 max-w-2xl mx-auto mb-10">
-            Join 25,000+ drivers who already park smarter. From Sabarmati Riverfront to SG Highway —
+            Park smarter. From Sabarmati Riverfront to SG Highway —
             your perfect spot is waiting.
           </p>
 

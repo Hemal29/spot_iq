@@ -92,7 +92,7 @@ const FindParkingHero = () => {
             </h1>
 
             <p className="text-lg text-[#e7c588]/80 dark:text-[#e7c588]/80 max-w-xl mb-8 animate-slideUp animation-delay-100">
-              Search, compare, and reserve parking instantly across 200+ locations in Ahmedabad.
+              Search, compare, and reserve parking instantly across Ahmedabad.
               Smart pricing, real-time availability, AI-powered recommendations.
             </p>
 

@@ -189,8 +189,7 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-[#e7c588]/[0.07] mix-blend-overlay" />
 
           <div className="relative max-w-7xl mx-auto px-4 w-full">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <motion.div variants={stagger} initial="hidden" animate="visible">
+              <motion.div variants={stagger} initial="hidden" animate="visible" className="max-w-2xl">
                 <motion.div
                   variants={fadeUp}
                   className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-[#0a0a0b]/10 backdrop-blur-md border border-[#e7c588]/30 text-sm font-medium text-[#f3e0ae] mb-6"
@@ -296,60 +295,6 @@ export default function HomePage() {
                   ))}
                 </motion.div>
               </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-                className="hidden lg:block relative"
-              >
-                <div className="relative w-full aspect-square max-w-md mx-auto">
-                  <div className="absolute inset-0 bg-[#e7c588]/20 rounded-3xl rotate-6 blur-sm" />
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#e7c588]/20 to-transparent rounded-3xl" />
-                  <div className="absolute inset-4 bg-black/60 backdrop-blur-xl rounded-2xl border border-[#e7c588]/25 shadow-2xl flex items-center justify-center overflow-hidden">
-                    <img
-                      src="/logoSpotIQ-full.png"
-                      alt="SpotIQ premium parking"
-                      className="absolute inset-0 w-full h-full object-contain p-8 opacity-90"
-                    />
-                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between px-4 py-3 rounded-xl bg-black/60 backdrop-blur-md border border-[#e7c588]/25">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2.5 h-2.5 rounded-full bg-[#e7c588] animate-pulse" />
-                        <span className="text-sm text-[#f9f0d7] font-medium">Live availability</span>
-                      </div>
-                      <span className="text-sm font-bold text-[#e7c588]">500+ spots</span>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={stagger}
-              className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4"
-            >
-              {[
-                { value: 500, suffix: '+', label: 'Locations' },
-                { value: 50, suffix: 'K+', label: 'Bookings' },
-                { value: 4.8, suffix: '★', label: 'Rating' },
-                { value: 24, suffix: '/7', label: 'Available' },
-              ].map((stat, i) => (
-                <motion.div
-                  key={stat.label}
-                  variants={fadeUp}
-                  custom={i}
-                  className="text-center py-6 rounded-2xl bg-black/50 backdrop-blur-xl border border-[#e7c588]/25 shadow-xl"
-                >
-                  <div className="text-3xl font-extrabold text-[#e7c588]">
-                    <AnimatedCounter target={stat.value} suffix={stat.suffix} />
-                  </div>
-                  <div className="text-sm text-[#e7c588]/80 mt-1">{stat.label}</div>
-                </motion.div>
-              ))}
-            </motion.div>
           </div>
         </section>
 
@@ -627,7 +572,7 @@ export default function HomePage() {
                 Ready to Find Perfect Parking?
               </motion.h2>
               <motion.p variants={fadeUp} custom={1} className="relative mt-4 text-[#f3e0ae]/90 text-lg max-w-xl mx-auto">
-                Join 10,000+ drivers who trust SpotIQ
+                Reserve your spot in seconds — no circling the block
               </motion.p>
               <motion.div variants={fadeUp} custom={2} className="relative mt-8 flex flex-wrap justify-center gap-4">
                 <Link

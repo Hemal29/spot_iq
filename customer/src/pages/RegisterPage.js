@@ -30,7 +30,7 @@ export default function RegisterPage() {
 
         <div className="relative z-10 max-w-lg">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#0a0a0b]/20/10 border border-[#e7c588]/25/20 rounded-full text-[#f9f0d7]  text-sm font-medium mb-6 animate-tilt-in">
-            <FaParking /> Join 10,000+ Happy Drivers
+            <FaParking /> Smart Parking — Ahmedabad
           </div>
 
           <h1 className="text-4xl lg:text-5xl font-bold text-[#f9f0d7] leading-tight mb-4 animate-tilt-in">

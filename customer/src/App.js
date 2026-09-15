@@ -24,6 +24,12 @@ import MyBookingsPage from './pages/MyBookingsPage';
 import BookingDetailPage from './pages/BookingDetailPage';
 import ProfilePage from './pages/ProfilePage';
 import NotificationsPage from './pages/NotificationsPage';
+import RecommendationsPage from './pages/RecommendationsPage';
+import SavedParkingPage from './pages/SavedParkingPage';
+import MonthlyPassesPage from './pages/MonthlyPassesPage';
+import WalletPage from './pages/WalletPage';
+import RewardsPage from './pages/RewardsPage';
+import ContactPage from './pages/ContactPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 function ProtectedRoute({ children }) {
@@ -35,10 +41,11 @@ function ProtectedRoute({ children }) {
 function AppRoutes() {
   return (
     <Routes>
+      {/* Auth pages — no header/footer */}
+      <Route path="login" element={<LoginPage />} />
+      <Route path="register" element={<RegisterPage />} />
       <Route path="/" element={<Layout />}>
         <Route index element={<HomePage />} />
-        <Route path="login" element={<LoginPage />} />
-        <Route path="register" element={<RegisterPage />} />
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
         <Route path="reset-password/:token" element={<ResetPasswordPage />} />
         <Route path="find-parking" element={<FindParkingPage />} />
@@ -71,6 +78,19 @@ function AppRoutes() {
           path="notifications"
           element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>}
         />
+        <Route path="recommendations" element={<RecommendationsPage />} />
+        <Route path="saved-parking" element={<SavedParkingPage />} />
+        <Route path="monthly-passes" element={<MonthlyPassesPage />} />
+        <Route
+          path="wallet"
+          element={<ProtectedRoute><WalletPage /></ProtectedRoute>}
+        />
+        <Route
+          path="rewards"
+          element={<ProtectedRoute><RewardsPage /></ProtectedRoute>}
+        />
+        <Route path="contact" element={<ContactPage />} />
+        <Route path="support" element={<ContactPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
